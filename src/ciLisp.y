@@ -6,13 +6,15 @@
     double dval;
     char *sval;
     struct ast_node *astNode;
+    struct symbol_table_node* symbolNode;
 };
 
-%token <sval> FUNC
+%token <sval> FUNC, SYMBOL
 %token <dval> INT, DOUBLE
-%token LPAREN RPAREN EOL QUIT
+%token LPAREN RPAREN LET EOL QUIT
 
 %type <astNode> s_expr f_expr number
+%type <symbolNode> let_section let_list let_elem
 
 %%
 
@@ -30,8 +32,14 @@ s_expr:
         fprintf(stderr, "yacc: s_expr ::= number\n");
         $$ = $1;
     }
+    | SYMBOL {
+        $$ = symbolASTNode($1);
+    }
     | f_expr {
         $$ = $1;
+    }
+    | LPAREN let_section s_expr RPAREN {
+        $$ = setSymbolTable($2, $3);
     }
     | QUIT {
         fprintf(stderr, "yacc: s_expr ::= QUIT\n");
@@ -51,6 +59,26 @@ number:
     | DOUBLE {
         fprintf(stderr, "yacc: number ::= DOUBLE\n");
         $$ = createNumberNode($1, DOUBLE_TYPE);
+    };
+
+
+
+let_section:
+    LPAREN let_list RPAREN {
+        $$ = $2;
+    };
+
+let_list:
+    LET let_elem {
+        $$ = $2;
+    }
+    |let_list let_elem {
+        $$ = addSymbol($1, $2);
+    };
+
+let_elem:
+    LPAREN SYMBOL s_expr RPAREN {
+        $$ = createSymbolTableNode($2, $3);
     };
 
 f_expr:

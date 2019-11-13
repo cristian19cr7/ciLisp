@@ -1,14 +1,13 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
+/* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
-   This program is free software; you can redistribute it and/or modify
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,9 +15,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -33,48 +30,56 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Tokens.  */
+#ifndef YY_YY_CYGDRIVE_C_USERS_CRISTIAN_AGUILAR_DESKTOP_COMP232_FALL19_CILISP_CMAKE_BUILD_DEBUG_CILISPPARSER_H_INCLUDED
+# define YY_YY_CYGDRIVE_C_USERS_CRISTIAN_AGUILAR_DESKTOP_COMP232_FALL19_CILISP_CMAKE_BUILD_DEBUG_CILISPPARSER_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token type.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     FUNC = 258,
-     INT = 259,
-     DOUBLE = 260,
-     LPAREN = 261,
-     RPAREN = 262,
-     EOL = 263,
-     QUIT = 264
-   };
+  enum yytokentype
+  {
+    FUNC = 258,
+    SYMBOL = 259,
+    INT = 260,
+    DOUBLE = 261,
+    LPAREN = 262,
+    RPAREN = 263,
+    LET = 264,
+    EOL = 265,
+    QUIT = 266
+  };
 #endif
-/* Tokens.  */
-#define FUNC 258
-#define INT 259
-#define DOUBLE 260
-#define LPAREN 261
-#define RPAREN 262
-#define EOL 263
-#define QUIT 264
 
-
-
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
-#line 5 "src/ciLisp.y"
+
+union YYSTYPE
 {
+#line 5 "src/ciLisp.y" /* yacc.c:1909  */
+
     double dval;
     char *sval;
     struct ast_node *astNode;
-}
-/* Line 1529 of yacc.c.  */
-#line 73 "/Users/cristian.aguilar596/Desktop/comp232/ciLisp/cmake-build-debug/ciLispParser.h"
-	YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+    struct symbol_table_node* symbolNode;
+
+#line 73 "/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/cmake-build-debug/ciLispParser.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
+int yyparse (void);
+
+#endif /* !YY_YY_CYGDRIVE_C_USERS_CRISTIAN_AGUILAR_DESKTOP_COMP232_FALL19_CILISP_CMAKE_BUILD_DEBUG_CILISPPARSER_H_INCLUDED  */

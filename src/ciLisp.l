@@ -9,6 +9,8 @@
 digit [0-9]
 int [+-]?{digit}+
 double [+-]?{digit}+\.{digit}*
+letter [a-zA-Z]
+symbol {letter}+
 func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"max"|"min"
 
 %%
@@ -25,6 +27,10 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
     return DOUBLE;
 }
 
+"let" {
+    return LET;
+    }
+
 "quit" {
     return QUIT;
     }
@@ -35,7 +41,12 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
     fprintf(stderr, "lex: FUNC sval = %s\n", yylval.sval);
     return FUNC;
     }
-
+{symbol} {
+            yylval.sval = (char *) malloc(strlen(yytext)*sizeof(char)+1);
+            strcpy(yylval.sval, yytext);
+            fprintf(stderr, "symbol = %s\n", yylval.sval);
+            return SYMBOL;
+        }
 "(" {
     fprintf(stderr, "lex: LPAREN\n");
     return LPAREN;
