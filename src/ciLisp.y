@@ -9,8 +9,8 @@
     struct symbol_table_node* symbolNode;
 };
 
-%token <sval> FUNC, SYMBOL
-%token <dval> INT, DOUBLE
+%token <sval> FUNC SYMBOL
+%token <dval> INT DOUBLE
 %token LPAREN RPAREN LET EOL QUIT
 
 %type <astNode> s_expr f_expr number
@@ -64,13 +64,13 @@ number:
 
 
 let_section:
-    LPAREN let_list RPAREN {
-        $$ = $2;
+    LPAREN LET let_list RPAREN {
+        $$ = $3;
     };
 
 let_list:
-    LET let_elem {
-        $$ = $2;
+    let_elem {
+        $$ = $1;
     }
     |let_list let_elem {
         $$ = addSymbol($1, $2);

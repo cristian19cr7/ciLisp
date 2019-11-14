@@ -116,7 +116,7 @@ void freeNode(AST_NODE *node);
 RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode);
-
+RET_VAL evalSymNode(SYMBOL_TABLE_NODE* symNode, char* id);
 void printRetVal(RET_VAL val);
 
 #endif

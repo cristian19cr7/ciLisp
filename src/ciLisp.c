@@ -155,7 +155,8 @@ RET_VAL eval(AST_NODE *node)
             result = evalNumNode(&node->data.number);
             break;
         case SYM_NODE_TYPE:
-            result = evalSymNode(&node->data.symbol);
+            result = evalSymNode(&node->data.symbol, node->data.symbol.ident);
+            break;
         default:
             yyerror("Invalid AST_NODE_TYPE, probably invalid writes somewhere!");
     }
@@ -266,12 +267,40 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
     return result;
 }
 
+RET_VAL evalSymNode(SYMBOL_TABLE_NODE* symNode, char* id)
+{
+    if (!symNode)
+        return (RET_VAL){INT_TYPE, NAN};
+
+    RET_VAL result = {INT_TYPE, NAN};
+
+    SYMBOL_TABLE_NODE* curNode = symNode;
+    while(curNode != NULL)
+    {
+        if(strcmp(curNode->ident, id) == 0)
+            result.dval = curNode->val->data.number.dval;
+
+
+        curNode = curNode->next;
+    }
+
+
+
+    return result;
+}
+
 //set the symbol table to the expr, the parent of all
 //the values in the table is set to the expr
 
 AST_NODE* setSymbolTable(SYMBOL_TABLE_NODE* symtable, AST_NODE* s_expr)
 {
-
+    s_expr->symbolTable = symtable;
+    SYMBOL_TABLE_NODE* curNode = symtable;
+    while(curNode != NULL)
+    {
+        curNode->val->parent = s_expr;
+        curNode = curNode->next;
+    }
     return s_expr;
 }
 
@@ -300,11 +329,11 @@ SYMBOL_TABLE_NODE* createSymbolTableNode(char* id, AST_NODE* s_expr)
 SYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* symTableList, SYMBOL_TABLE_NODE* symTableToAdd)
 {
     while(symTableList->next != NULL)
-    {
         symTableList = symTableList->next;
-    }
+
 
     symTableList->next = symTableToAdd;
+    symTableToAdd->next = NULL;
     return symTableList;
 }
 
