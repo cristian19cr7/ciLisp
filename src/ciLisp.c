@@ -103,6 +103,11 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)
     node->data.function.op1 = op1;
     node->data.function.op2 = op2;
     node->data.function.oper = resolveFunc(funcName);
+    if(op1 != NULL)
+        op1->parent = node;
+    if(op2 != NULL)
+        op2->parent = node;
+
 
     return node;
 }
@@ -155,7 +160,7 @@ RET_VAL eval(AST_NODE *node)
             result = evalNumNode(&node->data.number);
             break;
         case SYM_NODE_TYPE:
-            result = evalSymNode(&node->data.symbol, node->data.symbol.ident);
+            result = evalSymNode(node);
             break;
         default:
             yyerror("Invalid AST_NODE_TYPE, probably invalid writes somewhere!");
@@ -267,26 +272,25 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
     return result;
 }
 
-RET_VAL evalSymNode(SYMBOL_TABLE_NODE* symNode, char* id)
+RET_VAL evalSymNode(AST_NODE* node)
 {
-    if (!symNode)
+    if (!node)
         return (RET_VAL){INT_TYPE, NAN};
 
-    RET_VAL result = {INT_TYPE, NAN};
+    //RET_VAL result = {INT_TYPE, NAN};
 
-    SYMBOL_TABLE_NODE* curNode = symNode;
-    while(curNode != NULL)
-    {
-        if(strcmp(curNode->ident, id) == 0)
-            result.dval = curNode->val->data.number.dval;
+    AST_NODE* parent = node->parent;
+    SYMBOL_TABLE_NODE* curNode = parent->symbolTable;
+    while(parent != NULL) {
+        while (curNode != NULL) {
+            if (strcmp(curNode->ident, node->data.symbol.ident) == 0) {
+                return eval(curNode->val);
+            }
+            curNode = curNode->next;
+        }
 
-
-        curNode = curNode->next;
+        parent = parent->parent;
     }
-
-
-
-    return result;
 }
 
 //set the symbol table to the expr, the parent of all
@@ -294,13 +298,16 @@ RET_VAL evalSymNode(SYMBOL_TABLE_NODE* symNode, char* id)
 
 AST_NODE* setSymbolTable(SYMBOL_TABLE_NODE* symtable, AST_NODE* s_expr)
 {
-    s_expr->symbolTable = symtable;
+    if(s_expr == NULL)
+        return NULL;
+
     SYMBOL_TABLE_NODE* curNode = symtable;
     while(curNode != NULL)
     {
         curNode->val->parent = s_expr;
         curNode = curNode->next;
     }
+    s_expr->symbolTable = symtable;
     return s_expr;
 }
 
@@ -323,6 +330,7 @@ SYMBOL_TABLE_NODE* createSymbolTableNode(char* id, AST_NODE* s_expr)
 
     symbolTableNode->ident = id;
     symbolTableNode->val = s_expr;
+    symbolTableNode->next = NULL;
     return symbolTableNode;
 }
 

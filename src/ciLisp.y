@@ -11,7 +11,7 @@
 
 %token <sval> FUNC SYMBOL
 %token <dval> INT DOUBLE
-%token LPAREN RPAREN LET EOL QUIT
+%token LET LPAREN RPAREN EOL QUIT
 
 %type <astNode> s_expr f_expr number
 %type <symbolNode> let_section let_list let_elem
@@ -64,13 +64,13 @@ number:
 
 
 let_section:
-    LPAREN LET let_list RPAREN {
-        $$ = $3;
+    LPAREN let_list RPAREN {
+        $$ = $2;
     };
 
 let_list:
-    let_elem {
-        $$ = $1;
+     LET let_elem {
+        $$ = $2;
     }
     |let_list let_elem {
         $$ = addSymbol($1, $2);

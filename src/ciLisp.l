@@ -28,11 +28,22 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
 }
 
 "let" {
+    fprintf(stderr, "lex: LET\n");
     return LET;
     }
 
 "quit" {
     return QUIT;
+    }
+
+"(" {
+    fprintf(stderr, "lex: LPAREN\n");
+    return LPAREN;
+    }
+
+")" {
+    fprintf(stderr, "lex: RPAREN\n");
+    return RPAREN;
     }
 
 {func} {
@@ -47,15 +58,6 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
             fprintf(stderr, "symbol = %s\n", yylval.sval);
             return SYMBOL;
         }
-"(" {
-    fprintf(stderr, "lex: LPAREN\n");
-    return LPAREN;
-    }
-
-")" {
-    fprintf(stderr, "lex: RPAREN\n");
-    return RPAREN;
-    }
 
 [\n] {
     fprintf(stderr, "lex: EOL\n");

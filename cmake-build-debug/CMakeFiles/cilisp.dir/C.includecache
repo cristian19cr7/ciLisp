@@ -6,7 +6,11 @@
 
 #IncludeRegexTransform: 
 
-../src/ciLisp.h
+/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLisp.c
+ciLisp.h
+/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLisp.h
+
+/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLisp.h
 stdio.h
 -
 stdlib.h
@@ -20,61 +24,7 @@ math.h
 stdbool.h
 -
 ciLispParser.h
-../src/ciLispParser.h
-
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/cmake-build-debug/ciLispParser.c
-ciLisp.h
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/cmake-build-debug/ciLisp.h
-stddef.h
--
-libintl.h
--
-alloca.h
--
-malloc.h
--
-stdlib.h
--
-stdlib.h
--
-stdio.h
--
-
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/cmake-build-debug/ciLispScanner.c
-stdio.h
--
-string.h
--
-errno.h
--
-stdlib.h
--
-inttypes.h
--
-ciLisp.h
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/cmake-build-debug/ciLisp.h
-unistd.h
--
-
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLisp.c
-ciLisp.h
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLisp.h
-
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLisp.h
-stdio.h
--
-stdlib.h
--
-stdarg.h
--
-string.h
--
-math.h
--
-stdbool.h
--
-ciLispParser.h
-/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLispParser.h
+/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLispParser.h
 
 ciLispParser.h
 
