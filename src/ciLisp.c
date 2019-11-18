@@ -277,11 +277,12 @@ RET_VAL evalSymNode(AST_NODE* node)
     if (!node)
         return (RET_VAL){INT_TYPE, NAN};
 
-    //RET_VAL result = {INT_TYPE, NAN};
 
     AST_NODE* parent = node->parent;
-    SYMBOL_TABLE_NODE* curNode = parent->symbolTable;
-    while(parent != NULL) {
+    SYMBOL_TABLE_NODE* curNode;
+    while(parent != NULL)
+    {
+        curNode = parent->symbolTable;
         while (curNode != NULL) {
             if (strcmp(curNode->ident, node->data.symbol.ident) == 0) {
                 return eval(curNode->val);
@@ -291,6 +292,7 @@ RET_VAL evalSymNode(AST_NODE* node)
 
         parent = parent->parent;
     }
+    printf("Variable %s not found\n", node->data.symbol.ident);
 }
 
 //set the symbol table to the expr, the parent of all
