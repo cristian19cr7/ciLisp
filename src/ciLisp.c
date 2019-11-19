@@ -278,7 +278,7 @@ RET_VAL evalSymNode(AST_NODE* node)
         return (RET_VAL){INT_TYPE, NAN};
 
 
-    AST_NODE* parent = node->parent;
+    AST_NODE* parent = node;
     SYMBOL_TABLE_NODE* curNode;
     while(parent != NULL)
     {

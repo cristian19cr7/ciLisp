@@ -1,14 +1,13 @@
 file(REMOVE_RECURSE
   "ciLispParser.c"
-  "ciLispParser.h"
   "ciLispParser.output"
+  "ciLispParser.h"
   "ciLispScanner.c"
   "CMakeFiles/cilisp.dir/src/ciLisp.c.o"
   "CMakeFiles/cilisp.dir/ciLispScanner.c.o"
   "CMakeFiles/cilisp.dir/ciLispParser.c.o"
   "cilisp.pdb"
-  "cilisp.exe"
-  "libcilisp.dll.a"
+  "cilisp"
 )
 
 # Per-language clean rules from dependency scanning.

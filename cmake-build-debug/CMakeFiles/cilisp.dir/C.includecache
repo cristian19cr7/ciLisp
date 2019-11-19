@@ -6,11 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLisp.c
+/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLisp.c
 ciLisp.h
-/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLisp.h
+/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLisp.h
 
-/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLisp.h
+/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLisp.h
 stdio.h
 -
 stdlib.h
@@ -24,7 +24,7 @@ math.h
 stdbool.h
 -
 ciLispParser.h
-/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/src/ciLispParser.h
+/Users/cristian.aguilar596/Desktop/comp232/ciLisp/src/ciLispParser.h
 
 ciLispParser.h
 
