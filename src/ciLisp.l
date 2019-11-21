@@ -11,7 +11,7 @@ int [+-]?{digit}+
 double [+-]?{digit}+\.{digit}*
 letter [a-zA-Z]
 symbol {letter}+
-func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"max"|"min"
+func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"max"|"min"|"print"
 
 %%
 

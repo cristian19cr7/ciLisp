@@ -262,7 +262,9 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
             break;
         case READ_OPER:break;
         case RAND_OPER:break;
-        case PRINT_OPER:break;
+        case PRINT_OPER:
+            result.dval = op1val;
+            break;
         case EQUAL_OPER:break;
         case LESS_OPER:break;
         case GREATER_OPER:break;
