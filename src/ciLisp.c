@@ -285,15 +285,33 @@ RET_VAL evalSymNode(AST_NODE* node)
         curNode = parent->symbolTable;
         while (curNode != NULL) {
             if (strcmp(curNode->ident, node->data.symbol.ident) == 0) {
+                if(curNode->val->type != NUM_NODE_TYPE) {
+                    return eval(curNode->val);
+                }
+
+                double i = curNode->val->data.number.dval;
+                int j = (int)i;
                 if(curNode->val_type == NO_TYPE)
                 {
-                    double i = curNode->val->data.number.dval;
-                    int j = (int)i;
-                    if(i-j == 0)
+                    if(i-j == 0) {
                         curNode->val_type = INT_TYPE;
-                    else
+                        curNode->val->data.number.dval = j;
+                    }
+                    else {
                         curNode->val_type = DOUBLE_TYPE;
+                        curNode->val->data.number.dval = i;
+
+                    }
                 }
+                else if(curNode->val_type == INT_TYPE)
+                {
+                    curNode->val->data.number.dval = j;
+                    curNode->val->data.number.type = curNode->val_type;
+                    printf("WARNING: precision loss in the assignment for variable %s \n", curNode->ident);
+                }
+                else
+                    curNode->val->data.number.type = curNode->val_type;
+
                 return eval(curNode->val);
             }
             curNode = curNode->next;

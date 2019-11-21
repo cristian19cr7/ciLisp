@@ -1,0 +1,1523 @@
+Index: cmake-build-debug/CMakeFiles/3.14.5/CompilerIdCXX/CMakeCXXCompilerId.cpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- cmake-build-debug/CMakeFiles/3.14.5/CompilerIdCXX/CMakeCXXCompilerId.cpp	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
++++ cmake-build-debug/CMakeFiles/3.14.5/CompilerIdCXX/CMakeCXXCompilerId.cpp	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
+@@ -1,638 +0,0 @@
+-/* This source file must have a .cpp extension so that all C++ compilers
+-   recognize the extension without flags.  Borland does not know .cxx for
+-   example.  */
+-#ifndef __cplusplus
+-# error "A C compiler has been selected for C++."
+-#endif
+-
+-
+-/* Version number components: V=Version, R=Revision, P=Patch
+-   Version date components:   YYYY=Year, MM=Month,   DD=Day  */
+-
+-#if defined(__COMO__)
+-# define COMPILER_ID "Comeau"
+-  /* __COMO_VERSION__ = VRR */
+-# define COMPILER_VERSION_MAJOR DEC(__COMO_VERSION__ / 100)
+-# define COMPILER_VERSION_MINOR DEC(__COMO_VERSION__ % 100)
+-
+-#elif defined(__INTEL_COMPILER) || defined(__ICC)
+-# define COMPILER_ID "Intel"
+-# if defined(_MSC_VER)
+-#  define SIMULATE_ID "MSVC"
+-# endif
+-  /* __INTEL_COMPILER = VRP */
+-# define COMPILER_VERSION_MAJOR DEC(__INTEL_COMPILER/100)
+-# define COMPILER_VERSION_MINOR DEC(__INTEL_COMPILER/10 % 10)
+-# if defined(__INTEL_COMPILER_UPDATE)
+-#  define COMPILER_VERSION_PATCH DEC(__INTEL_COMPILER_UPDATE)
+-# else
+-#  define COMPILER_VERSION_PATCH DEC(__INTEL_COMPILER   % 10)
+-# endif
+-# if defined(__INTEL_COMPILER_BUILD_DATE)
+-  /* __INTEL_COMPILER_BUILD_DATE = YYYYMMDD */
+-#  define COMPILER_VERSION_TWEAK DEC(__INTEL_COMPILER_BUILD_DATE)
+-# endif
+-# if defined(_MSC_VER)
+-   /* _MSC_VER = VVRR */
+-#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+-#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+-# endif
+-
+-#elif defined(__PATHCC__)
+-# define COMPILER_ID "PathScale"
+-# define COMPILER_VERSION_MAJOR DEC(__PATHCC__)
+-# define COMPILER_VERSION_MINOR DEC(__PATHCC_MINOR__)
+-# if defined(__PATHCC_PATCHLEVEL__)
+-#  define COMPILER_VERSION_PATCH DEC(__PATHCC_PATCHLEVEL__)
+-# endif
+-
+-#elif defined(__BORLANDC__) && defined(__CODEGEARC_VERSION__)
+-# define COMPILER_ID "Embarcadero"
+-# define COMPILER_VERSION_MAJOR HEX(__CODEGEARC_VERSION__>>24 & 0x00FF)
+-# define COMPILER_VERSION_MINOR HEX(__CODEGEARC_VERSION__>>16 & 0x00FF)
+-# define COMPILER_VERSION_PATCH DEC(__CODEGEARC_VERSION__     & 0xFFFF)
+-
+-#elif defined(__BORLANDC__)
+-# define COMPILER_ID "Borland"
+-  /* __BORLANDC__ = 0xVRR */
+-# define COMPILER_VERSION_MAJOR HEX(__BORLANDC__>>8)
+-# define COMPILER_VERSION_MINOR HEX(__BORLANDC__ & 0xFF)
+-
+-#elif defined(__WATCOMC__) && __WATCOMC__ < 1200
+-# define COMPILER_ID "Watcom"
+-   /* __WATCOMC__ = VVRR */
+-# define COMPILER_VERSION_MAJOR DEC(__WATCOMC__ / 100)
+-# define COMPILER_VERSION_MINOR DEC((__WATCOMC__ / 10) % 10)
+-# if (__WATCOMC__ % 10) > 0
+-#  define COMPILER_VERSION_PATCH DEC(__WATCOMC__ % 10)
+-# endif
+-
+-#elif defined(__WATCOMC__)
+-# define COMPILER_ID "OpenWatcom"
+-   /* __WATCOMC__ = VVRP + 1100 */
+-# define COMPILER_VERSION_MAJOR DEC((__WATCOMC__ - 1100) / 100)
+-# define COMPILER_VERSION_MINOR DEC((__WATCOMC__ / 10) % 10)
+-# if (__WATCOMC__ % 10) > 0
+-#  define COMPILER_VERSION_PATCH DEC(__WATCOMC__ % 10)
+-# endif
+-
+-#elif defined(__SUNPRO_CC)
+-# define COMPILER_ID "SunPro"
+-# if __SUNPRO_CC >= 0x5100
+-   /* __SUNPRO_CC = 0xVRRP */
+-#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_CC>>12)
+-#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_CC>>4 & 0xFF)
+-#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_CC    & 0xF)
+-# else
+-   /* __SUNPRO_CC = 0xVRP */
+-#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_CC>>8)
+-#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_CC>>4 & 0xF)
+-#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_CC    & 0xF)
+-# endif
+-
+-#elif defined(__HP_aCC)
+-# define COMPILER_ID "HP"
+-  /* __HP_aCC = VVRRPP */
+-# define COMPILER_VERSION_MAJOR DEC(__HP_aCC/10000)
+-# define COMPILER_VERSION_MINOR DEC(__HP_aCC/100 % 100)
+-# define COMPILER_VERSION_PATCH DEC(__HP_aCC     % 100)
+-
+-#elif defined(__DECCXX)
+-# define COMPILER_ID "Compaq"
+-  /* __DECCXX_VER = VVRRTPPPP */
+-# define COMPILER_VERSION_MAJOR DEC(__DECCXX_VER/10000000)
+-# define COMPILER_VERSION_MINOR DEC(__DECCXX_VER/100000  % 100)
+-# define COMPILER_VERSION_PATCH DEC(__DECCXX_VER         % 10000)
+-
+-#elif defined(__IBMCPP__) && defined(__COMPILER_VER__)
+-# define COMPILER_ID "zOS"
+-# if defined(__ibmxl__)
+-#  define COMPILER_VERSION_MAJOR DEC(__ibmxl_version__)
+-#  define COMPILER_VERSION_MINOR DEC(__ibmxl_release__)
+-#  define COMPILER_VERSION_PATCH DEC(__ibmxl_modification__)
+-#  define COMPILER_VERSION_TWEAK DEC(__ibmxl_ptf_fix_level__)
+-# else
+-   /* __IBMCPP__ = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(__IBMCPP__/100)
+-#  define COMPILER_VERSION_MINOR DEC(__IBMCPP__/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(__IBMCPP__    % 10)
+-# endif
+-
+-
+-#elif defined(__ibmxl__) || (defined(__IBMCPP__) && !defined(__COMPILER_VER__) && __IBMCPP__ >= 800)
+-# define COMPILER_ID "XL"
+-# if defined(__ibmxl__)
+-#  define COMPILER_VERSION_MAJOR DEC(__ibmxl_version__)
+-#  define COMPILER_VERSION_MINOR DEC(__ibmxl_release__)
+-#  define COMPILER_VERSION_PATCH DEC(__ibmxl_modification__)
+-#  define COMPILER_VERSION_TWEAK DEC(__ibmxl_ptf_fix_level__)
+-# else
+-   /* __IBMCPP__ = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(__IBMCPP__/100)
+-#  define COMPILER_VERSION_MINOR DEC(__IBMCPP__/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(__IBMCPP__    % 10)
+-# endif
+-
+-
+-#elif defined(__IBMCPP__) && !defined(__COMPILER_VER__) && __IBMCPP__ < 800
+-# define COMPILER_ID "VisualAge"
+-# if defined(__ibmxl__)
+-#  define COMPILER_VERSION_MAJOR DEC(__ibmxl_version__)
+-#  define COMPILER_VERSION_MINOR DEC(__ibmxl_release__)
+-#  define COMPILER_VERSION_PATCH DEC(__ibmxl_modification__)
+-#  define COMPILER_VERSION_TWEAK DEC(__ibmxl_ptf_fix_level__)
+-# else
+-   /* __IBMCPP__ = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(__IBMCPP__/100)
+-#  define COMPILER_VERSION_MINOR DEC(__IBMCPP__/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(__IBMCPP__    % 10)
+-# endif
+-
+-
+-#elif defined(__PGI)
+-# define COMPILER_ID "PGI"
+-# define COMPILER_VERSION_MAJOR DEC(__PGIC__)
+-# define COMPILER_VERSION_MINOR DEC(__PGIC_MINOR__)
+-# if defined(__PGIC_PATCHLEVEL__)
+-#  define COMPILER_VERSION_PATCH DEC(__PGIC_PATCHLEVEL__)
+-# endif
+-
+-#elif defined(_CRAYC)
+-# define COMPILER_ID "Cray"
+-# define COMPILER_VERSION_MAJOR DEC(_RELEASE_MAJOR)
+-# define COMPILER_VERSION_MINOR DEC(_RELEASE_MINOR)
+-
+-#elif defined(__TI_COMPILER_VERSION__)
+-# define COMPILER_ID "TI"
+-  /* __TI_COMPILER_VERSION__ = VVVRRRPPP */
+-# define COMPILER_VERSION_MAJOR DEC(__TI_COMPILER_VERSION__/1000000)
+-# define COMPILER_VERSION_MINOR DEC(__TI_COMPILER_VERSION__/1000   % 1000)
+-# define COMPILER_VERSION_PATCH DEC(__TI_COMPILER_VERSION__        % 1000)
+-
+-#elif defined(__FUJITSU) || defined(__FCC_VERSION) || defined(__fcc_version)
+-# define COMPILER_ID "Fujitsu"
+-
+-#elif defined(__ghs__)
+-# define COMPILER_ID "GHS"
+-/* __GHS_VERSION_NUMBER = VVVVRP */
+-# ifdef __GHS_VERSION_NUMBER
+-# define COMPILER_VERSION_MAJOR DEC(__GHS_VERSION_NUMBER / 100)
+-# define COMPILER_VERSION_MINOR DEC(__GHS_VERSION_NUMBER / 10 % 10)
+-# define COMPILER_VERSION_PATCH DEC(__GHS_VERSION_NUMBER      % 10)
+-# endif
+-
+-#elif defined(__SCO_VERSION__)
+-# define COMPILER_ID "SCO"
+-
+-#elif defined(__ARMCC_VERSION) && !defined(__clang__)
+-# define COMPILER_ID "ARMCC"
+-#if __ARMCC_VERSION >= 1000000
+-  /* __ARMCC_VERSION = VRRPPPP */
+-  # define COMPILER_VERSION_MAJOR DEC(__ARMCC_VERSION/1000000)
+-  # define COMPILER_VERSION_MINOR DEC(__ARMCC_VERSION/10000 % 100)
+-  # define COMPILER_VERSION_PATCH DEC(__ARMCC_VERSION     % 10000)
+-#else
+-  /* __ARMCC_VERSION = VRPPPP */
+-  # define COMPILER_VERSION_MAJOR DEC(__ARMCC_VERSION/100000)
+-  # define COMPILER_VERSION_MINOR DEC(__ARMCC_VERSION/10000 % 10)
+-  # define COMPILER_VERSION_PATCH DEC(__ARMCC_VERSION    % 10000)
+-#endif
+-
+-
+-#elif defined(__clang__) && defined(__apple_build_version__)
+-# define COMPILER_ID "AppleClang"
+-# if defined(_MSC_VER)
+-#  define SIMULATE_ID "MSVC"
+-# endif
+-# define COMPILER_VERSION_MAJOR DEC(__clang_major__)
+-# define COMPILER_VERSION_MINOR DEC(__clang_minor__)
+-# define COMPILER_VERSION_PATCH DEC(__clang_patchlevel__)
+-# if defined(_MSC_VER)
+-   /* _MSC_VER = VVRR */
+-#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+-#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+-# endif
+-# define COMPILER_VERSION_TWEAK DEC(__apple_build_version__)
+-
+-#elif defined(__clang__)
+-# define COMPILER_ID "Clang"
+-# if defined(_MSC_VER)
+-#  define SIMULATE_ID "MSVC"
+-# endif
+-# define COMPILER_VERSION_MAJOR DEC(__clang_major__)
+-# define COMPILER_VERSION_MINOR DEC(__clang_minor__)
+-# define COMPILER_VERSION_PATCH DEC(__clang_patchlevel__)
+-# if defined(_MSC_VER)
+-   /* _MSC_VER = VVRR */
+-#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+-#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+-# endif
+-
+-#elif defined(__GNUC__) || defined(__GNUG__)
+-# define COMPILER_ID "GNU"
+-# if defined(__GNUC__)
+-#  define COMPILER_VERSION_MAJOR DEC(__GNUC__)
+-# else
+-#  define COMPILER_VERSION_MAJOR DEC(__GNUG__)
+-# endif
+-# if defined(__GNUC_MINOR__)
+-#  define COMPILER_VERSION_MINOR DEC(__GNUC_MINOR__)
+-# endif
+-# if defined(__GNUC_PATCHLEVEL__)
+-#  define COMPILER_VERSION_PATCH DEC(__GNUC_PATCHLEVEL__)
+-# endif
+-
+-#elif defined(_MSC_VER)
+-# define COMPILER_ID "MSVC"
+-  /* _MSC_VER = VVRR */
+-# define COMPILER_VERSION_MAJOR DEC(_MSC_VER / 100)
+-# define COMPILER_VERSION_MINOR DEC(_MSC_VER % 100)
+-# if defined(_MSC_FULL_VER)
+-#  if _MSC_VER >= 1400
+-    /* _MSC_FULL_VER = VVRRPPPPP */
+-#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 100000)
+-#  else
+-    /* _MSC_FULL_VER = VVRRPPPP */
+-#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 10000)
+-#  endif
+-# endif
+-# if defined(_MSC_BUILD)
+-#  define COMPILER_VERSION_TWEAK DEC(_MSC_BUILD)
+-# endif
+-
+-#elif defined(__VISUALDSPVERSION__) || defined(__ADSPBLACKFIN__) || defined(__ADSPTS__) || defined(__ADSP21000__)
+-# define COMPILER_ID "ADSP"
+-#if defined(__VISUALDSPVERSION__)
+-  /* __VISUALDSPVERSION__ = 0xVVRRPP00 */
+-# define COMPILER_VERSION_MAJOR HEX(__VISUALDSPVERSION__>>24)
+-# define COMPILER_VERSION_MINOR HEX(__VISUALDSPVERSION__>>16 & 0xFF)
+-# define COMPILER_VERSION_PATCH HEX(__VISUALDSPVERSION__>>8  & 0xFF)
+-#endif
+-
+-#elif defined(__IAR_SYSTEMS_ICC__) || defined(__IAR_SYSTEMS_ICC)
+-# define COMPILER_ID "IAR"
+-# if defined(__VER__) && defined(__ICCARM__)
+-#  define COMPILER_VERSION_MAJOR DEC((__VER__) / 1000000)
+-#  define COMPILER_VERSION_MINOR DEC(((__VER__) / 1000) % 1000)
+-#  define COMPILER_VERSION_PATCH DEC((__VER__) % 1000)
+-#  define COMPILER_VERSION_INTERNAL DEC(__IAR_SYSTEMS_ICC__)
+-# elif defined(__VER__) && defined(__ICCAVR__)
+-#  define COMPILER_VERSION_MAJOR DEC((__VER__) / 100)
+-#  define COMPILER_VERSION_MINOR DEC((__VER__) - (((__VER__) / 100)*100))
+-#  define COMPILER_VERSION_PATCH DEC(__SUBVERSION__)
+-#  define COMPILER_VERSION_INTERNAL DEC(__IAR_SYSTEMS_ICC__)
+-# endif
+-
+-#elif defined(_SGI_COMPILER_VERSION) || defined(_COMPILER_VERSION)
+-# define COMPILER_ID "MIPSpro"
+-# if defined(_SGI_COMPILER_VERSION)
+-  /* _SGI_COMPILER_VERSION = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(_SGI_COMPILER_VERSION/100)
+-#  define COMPILER_VERSION_MINOR DEC(_SGI_COMPILER_VERSION/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(_SGI_COMPILER_VERSION    % 10)
+-# else
+-  /* _COMPILER_VERSION = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(_COMPILER_VERSION/100)
+-#  define COMPILER_VERSION_MINOR DEC(_COMPILER_VERSION/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(_COMPILER_VERSION    % 10)
+-# endif
+-
+-
+-/* These compilers are either not known or too old to define an
+-  identification macro.  Try to identify the platform and guess that
+-  it is the native compiler.  */
+-#elif defined(__hpux) || defined(__hpua)
+-# define COMPILER_ID "HP"
+-
+-#else /* unknown compiler */
+-# define COMPILER_ID ""
+-#endif
+-
+-/* Construct the string literal in pieces to prevent the source from
+-   getting matched.  Store it in a pointer rather than an array
+-   because some compilers will just produce instructions to fill the
+-   array rather than assigning a pointer to a static array.  */
+-char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
+-#ifdef SIMULATE_ID
+-char const* info_simulate = "INFO" ":" "simulate[" SIMULATE_ID "]";
+-#endif
+-
+-#ifdef __QNXNTO__
+-char const* qnxnto = "INFO" ":" "qnxnto[]";
+-#endif
+-
+-#if defined(__CRAYXE) || defined(__CRAYXC)
+-char const *info_cray = "INFO" ":" "compiler_wrapper[CrayPrgEnv]";
+-#endif
+-
+-#define STRINGIFY_HELPER(X) #X
+-#define STRINGIFY(X) STRINGIFY_HELPER(X)
+-
+-/* Identify known platforms by name.  */
+-#if defined(__linux) || defined(__linux__) || defined(linux)
+-# define PLATFORM_ID "Linux"
+-
+-#elif defined(__CYGWIN__)
+-# define PLATFORM_ID "Cygwin"
+-
+-#elif defined(__MINGW32__)
+-# define PLATFORM_ID "MinGW"
+-
+-#elif defined(__APPLE__)
+-# define PLATFORM_ID "Darwin"
+-
+-#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+-# define PLATFORM_ID "Windows"
+-
+-#elif defined(__FreeBSD__) || defined(__FreeBSD)
+-# define PLATFORM_ID "FreeBSD"
+-
+-#elif defined(__NetBSD__) || defined(__NetBSD)
+-# define PLATFORM_ID "NetBSD"
+-
+-#elif defined(__OpenBSD__) || defined(__OPENBSD)
+-# define PLATFORM_ID "OpenBSD"
+-
+-#elif defined(__sun) || defined(sun)
+-# define PLATFORM_ID "SunOS"
+-
+-#elif defined(_AIX) || defined(__AIX) || defined(__AIX__) || defined(__aix) || defined(__aix__)
+-# define PLATFORM_ID "AIX"
+-
+-#elif defined(__hpux) || defined(__hpux__)
+-# define PLATFORM_ID "HP-UX"
+-
+-#elif defined(__HAIKU__)
+-# define PLATFORM_ID "Haiku"
+-
+-#elif defined(__BeOS) || defined(__BEOS__) || defined(_BEOS)
+-# define PLATFORM_ID "BeOS"
+-
+-#elif defined(__QNX__) || defined(__QNXNTO__)
+-# define PLATFORM_ID "QNX"
+-
+-#elif defined(__tru64) || defined(_tru64) || defined(__TRU64__)
+-# define PLATFORM_ID "Tru64"
+-
+-#elif defined(__riscos) || defined(__riscos__)
+-# define PLATFORM_ID "RISCos"
+-
+-#elif defined(__sinix) || defined(__sinix__) || defined(__SINIX__)
+-# define PLATFORM_ID "SINIX"
+-
+-#elif defined(__UNIX_SV__)
+-# define PLATFORM_ID "UNIX_SV"
+-
+-#elif defined(__bsdos__)
+-# define PLATFORM_ID "BSDOS"
+-
+-#elif defined(_MPRAS) || defined(MPRAS)
+-# define PLATFORM_ID "MP-RAS"
+-
+-#elif defined(__osf) || defined(__osf__)
+-# define PLATFORM_ID "OSF1"
+-
+-#elif defined(_SCO_SV) || defined(SCO_SV) || defined(sco_sv)
+-# define PLATFORM_ID "SCO_SV"
+-
+-#elif defined(__ultrix) || defined(__ultrix__) || defined(_ULTRIX)
+-# define PLATFORM_ID "ULTRIX"
+-
+-#elif defined(__XENIX__) || defined(_XENIX) || defined(XENIX)
+-# define PLATFORM_ID "Xenix"
+-
+-#elif defined(__WATCOMC__)
+-# if defined(__LINUX__)
+-#  define PLATFORM_ID "Linux"
+-
+-# elif defined(__DOS__)
+-#  define PLATFORM_ID "DOS"
+-
+-# elif defined(__OS2__)
+-#  define PLATFORM_ID "OS2"
+-
+-# elif defined(__WINDOWS__)
+-#  define PLATFORM_ID "Windows3x"
+-
+-# else /* unknown platform */
+-#  define PLATFORM_ID
+-# endif
+-
+-#elif defined(__INTEGRITY)
+-# if defined(INT_178B)
+-#  define PLATFORM_ID "Integrity178"
+-
+-# else /* regular Integrity */
+-#  define PLATFORM_ID "Integrity"
+-# endif
+-
+-#else /* unknown platform */
+-# define PLATFORM_ID
+-
+-#endif
+-
+-/* For windows compilers MSVC and Intel we can determine
+-   the architecture of the compiler being used.  This is because
+-   the compilers do not have flags that can change the architecture,
+-   but rather depend on which compiler is being used
+-*/
+-#if defined(_WIN32) && defined(_MSC_VER)
+-# if defined(_M_IA64)
+-#  define ARCHITECTURE_ID "IA64"
+-
+-# elif defined(_M_X64) || defined(_M_AMD64)
+-#  define ARCHITECTURE_ID "x64"
+-
+-# elif defined(_M_IX86)
+-#  define ARCHITECTURE_ID "X86"
+-
+-# elif defined(_M_ARM64)
+-#  define ARCHITECTURE_ID "ARM64"
+-
+-# elif defined(_M_ARM)
+-#  if _M_ARM == 4
+-#   define ARCHITECTURE_ID "ARMV4I"
+-#  elif _M_ARM == 5
+-#   define ARCHITECTURE_ID "ARMV5I"
+-#  else
+-#   define ARCHITECTURE_ID "ARMV" STRINGIFY(_M_ARM)
+-#  endif
+-
+-# elif defined(_M_MIPS)
+-#  define ARCHITECTURE_ID "MIPS"
+-
+-# elif defined(_M_SH)
+-#  define ARCHITECTURE_ID "SHx"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-
+-#elif defined(__WATCOMC__)
+-# if defined(_M_I86)
+-#  define ARCHITECTURE_ID "I86"
+-
+-# elif defined(_M_IX86)
+-#  define ARCHITECTURE_ID "X86"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-
+-#elif defined(__IAR_SYSTEMS_ICC__) || defined(__IAR_SYSTEMS_ICC)
+-# if defined(__ICCARM__)
+-#  define ARCHITECTURE_ID "ARM"
+-
+-# elif defined(__ICCAVR__)
+-#  define ARCHITECTURE_ID "AVR"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-
+-#elif defined(__ghs__)
+-# if defined(__PPC64__)
+-#  define ARCHITECTURE_ID "PPC64"
+-
+-# elif defined(__ppc__)
+-#  define ARCHITECTURE_ID "PPC"
+-
+-# elif defined(__ARM__)
+-#  define ARCHITECTURE_ID "ARM"
+-
+-# elif defined(__x86_64__)
+-#  define ARCHITECTURE_ID "x64"
+-
+-# elif defined(__i386__)
+-#  define ARCHITECTURE_ID "X86"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-#else
+-#  define ARCHITECTURE_ID
+-#endif
+-
+-/* Convert integer to decimal digit literals.  */
+-#define DEC(n)                   \
+-  ('0' + (((n) / 10000000)%10)), \
+-  ('0' + (((n) / 1000000)%10)),  \
+-  ('0' + (((n) / 100000)%10)),   \
+-  ('0' + (((n) / 10000)%10)),    \
+-  ('0' + (((n) / 1000)%10)),     \
+-  ('0' + (((n) / 100)%10)),      \
+-  ('0' + (((n) / 10)%10)),       \
+-  ('0' +  ((n) % 10))
+-
+-/* Convert integer to hex digit literals.  */
+-#define HEX(n)             \
+-  ('0' + ((n)>>28 & 0xF)), \
+-  ('0' + ((n)>>24 & 0xF)), \
+-  ('0' + ((n)>>20 & 0xF)), \
+-  ('0' + ((n)>>16 & 0xF)), \
+-  ('0' + ((n)>>12 & 0xF)), \
+-  ('0' + ((n)>>8  & 0xF)), \
+-  ('0' + ((n)>>4  & 0xF)), \
+-  ('0' + ((n)     & 0xF))
+-
+-/* Construct a string literal encoding the version number components. */
+-#ifdef COMPILER_VERSION_MAJOR
+-char const info_version[] = {
+-  'I', 'N', 'F', 'O', ':',
+-  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','[',
+-  COMPILER_VERSION_MAJOR,
+-# ifdef COMPILER_VERSION_MINOR
+-  '.', COMPILER_VERSION_MINOR,
+-#  ifdef COMPILER_VERSION_PATCH
+-   '.', COMPILER_VERSION_PATCH,
+-#   ifdef COMPILER_VERSION_TWEAK
+-    '.', COMPILER_VERSION_TWEAK,
+-#   endif
+-#  endif
+-# endif
+-  ']','\0'};
+-#endif
+-
+-/* Construct a string literal encoding the internal version number. */
+-#ifdef COMPILER_VERSION_INTERNAL
+-char const info_version_internal[] = {
+-  'I', 'N', 'F', 'O', ':',
+-  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','_',
+-  'i','n','t','e','r','n','a','l','[',
+-  COMPILER_VERSION_INTERNAL,']','\0'};
+-#endif
+-
+-/* Construct a string literal encoding the version number components. */
+-#ifdef SIMULATE_VERSION_MAJOR
+-char const info_simulate_version[] = {
+-  'I', 'N', 'F', 'O', ':',
+-  's','i','m','u','l','a','t','e','_','v','e','r','s','i','o','n','[',
+-  SIMULATE_VERSION_MAJOR,
+-# ifdef SIMULATE_VERSION_MINOR
+-  '.', SIMULATE_VERSION_MINOR,
+-#  ifdef SIMULATE_VERSION_PATCH
+-   '.', SIMULATE_VERSION_PATCH,
+-#   ifdef SIMULATE_VERSION_TWEAK
+-    '.', SIMULATE_VERSION_TWEAK,
+-#   endif
+-#  endif
+-# endif
+-  ']','\0'};
+-#endif
+-
+-/* Construct the string literal in pieces to prevent the source from
+-   getting matched.  Store it in a pointer rather than an array
+-   because some compilers will just produce instructions to fill the
+-   array rather than assigning a pointer to a static array.  */
+-char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
+-char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
+-
+-
+-
+-
+-#if defined(_MSC_VER) && defined(_MSVC_LANG)
+-#define CXX_STD _MSVC_LANG
+-#else
+-#define CXX_STD __cplusplus
+-#endif
+-
+-const char* info_language_dialect_default = "INFO" ":" "dialect_default["
+-#if CXX_STD > 201703L
+-  "20"
+-#elif CXX_STD >= 201703L
+-  "17"
+-#elif CXX_STD >= 201402L
+-  "14"
+-#elif CXX_STD >= 201103L
+-  "11"
+-#else
+-  "98"
+-#endif
+-"]";
+-
+-/*--------------------------------------------------------------------------*/
+-
+-int main(int argc, char* argv[])
+-{
+-  int require = 0;
+-  require += info_compiler[argc];
+-  require += info_platform[argc];
+-#ifdef COMPILER_VERSION_MAJOR
+-  require += info_version[argc];
+-#endif
+-#ifdef COMPILER_VERSION_INTERNAL
+-  require += info_version_internal[argc];
+-#endif
+-#ifdef SIMULATE_ID
+-  require += info_simulate[argc];
+-#endif
+-#ifdef SIMULATE_VERSION_MAJOR
+-  require += info_simulate_version[argc];
+-#endif
+-#if defined(__CRAYXE) || defined(__CRAYXC)
+-  require += info_cray[argc];
+-#endif
+-  require += info_language_dialect_default[argc];
+-  (void)argv;
+-  return require;
+-}
+Index: cmake-build-debug/CMakeFiles/3.14.5/CMakeCCompiler.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- cmake-build-debug/CMakeFiles/3.14.5/CMakeCCompiler.cmake	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
++++ cmake-build-debug/CMakeFiles/3.14.5/CMakeCCompiler.cmake	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
+@@ -1,75 +0,0 @@
+-set(CMAKE_C_COMPILER "/Library/Developer/CommandLineTools/usr/bin/cc")
+-set(CMAKE_C_COMPILER_ARG1 "")
+-set(CMAKE_C_COMPILER_ID "AppleClang")
+-set(CMAKE_C_COMPILER_VERSION "10.0.1.10010046")
+-set(CMAKE_C_COMPILER_VERSION_INTERNAL "")
+-set(CMAKE_C_COMPILER_WRAPPER "")
+-set(CMAKE_C_STANDARD_COMPUTED_DEFAULT "11")
+-set(CMAKE_C_COMPILE_FEATURES "c_std_90;c_function_prototypes;c_std_99;c_restrict;c_variadic_macros;c_std_11;c_static_assert")
+-set(CMAKE_C90_COMPILE_FEATURES "c_std_90;c_function_prototypes")
+-set(CMAKE_C99_COMPILE_FEATURES "c_std_99;c_restrict;c_variadic_macros")
+-set(CMAKE_C11_COMPILE_FEATURES "c_std_11;c_static_assert")
+-
+-set(CMAKE_C_PLATFORM_ID "Darwin")
+-set(CMAKE_C_SIMULATE_ID "")
+-set(CMAKE_C_SIMULATE_VERSION "")
+-
+-
+-
+-set(CMAKE_AR "/Library/Developer/CommandLineTools/usr/bin/ar")
+-set(CMAKE_C_COMPILER_AR "")
+-set(CMAKE_RANLIB "/Library/Developer/CommandLineTools/usr/bin/ranlib")
+-set(CMAKE_C_COMPILER_RANLIB "")
+-set(CMAKE_LINKER "/Library/Developer/CommandLineTools/usr/bin/ld")
+-set(CMAKE_MT "")
+-set(CMAKE_COMPILER_IS_GNUCC )
+-set(CMAKE_C_COMPILER_LOADED 1)
+-set(CMAKE_C_COMPILER_WORKS TRUE)
+-set(CMAKE_C_ABI_COMPILED TRUE)
+-set(CMAKE_COMPILER_IS_MINGW )
+-set(CMAKE_COMPILER_IS_CYGWIN )
+-if(CMAKE_COMPILER_IS_CYGWIN)
+-  set(CYGWIN 1)
+-  set(UNIX 1)
+-endif()
+-
+-set(CMAKE_C_COMPILER_ENV_VAR "CC")
+-
+-if(CMAKE_COMPILER_IS_MINGW)
+-  set(MINGW 1)
+-endif()
+-set(CMAKE_C_COMPILER_ID_RUN 1)
+-set(CMAKE_C_SOURCE_FILE_EXTENSIONS c;m)
+-set(CMAKE_C_IGNORE_EXTENSIONS h;H;o;O;obj;OBJ;def;DEF;rc;RC)
+-set(CMAKE_C_LINKER_PREFERENCE 10)
+-
+-# Save compiler ABI information.
+-set(CMAKE_C_SIZEOF_DATA_PTR "8")
+-set(CMAKE_C_COMPILER_ABI "")
+-set(CMAKE_C_LIBRARY_ARCHITECTURE "")
+-
+-if(CMAKE_C_SIZEOF_DATA_PTR)
+-  set(CMAKE_SIZEOF_VOID_P "${CMAKE_C_SIZEOF_DATA_PTR}")
+-endif()
+-
+-if(CMAKE_C_COMPILER_ABI)
+-  set(CMAKE_INTERNAL_PLATFORM_ABI "${CMAKE_C_COMPILER_ABI}")
+-endif()
+-
+-if(CMAKE_C_LIBRARY_ARCHITECTURE)
+-  set(CMAKE_LIBRARY_ARCHITECTURE "")
+-endif()
+-
+-set(CMAKE_C_CL_SHOWINCLUDES_PREFIX "")
+-if(CMAKE_C_CL_SHOWINCLUDES_PREFIX)
+-  set(CMAKE_CL_SHOWINCLUDES_PREFIX "${CMAKE_C_CL_SHOWINCLUDES_PREFIX}")
+-endif()
+-
+-
+-
+-
+-
+-set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include;/Library/Developer/CommandLineTools/usr/include;/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/usr/include")
+-set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "")
+-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/usr/lib")
+-set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks")
+Index: cmake-build-debug/CMakeFiles/3.14.5/CompilerIdC/CMakeCCompilerId.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- cmake-build-debug/CMakeFiles/3.14.5/CompilerIdC/CMakeCCompilerId.c	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
++++ cmake-build-debug/CMakeFiles/3.14.5/CompilerIdC/CMakeCCompilerId.c	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
+@@ -1,659 +0,0 @@
+-#ifdef __cplusplus
+-# error "A C++ compiler has been selected for C."
+-#endif
+-
+-#if defined(__18CXX)
+-# define ID_VOID_MAIN
+-#endif
+-#if defined(__CLASSIC_C__)
+-/* cv-qualifiers did not exist in K&R C */
+-# define const
+-# define volatile
+-#endif
+-
+-
+-/* Version number components: V=Version, R=Revision, P=Patch
+-   Version date components:   YYYY=Year, MM=Month,   DD=Day  */
+-
+-#if defined(__INTEL_COMPILER) || defined(__ICC)
+-# define COMPILER_ID "Intel"
+-# if defined(_MSC_VER)
+-#  define SIMULATE_ID "MSVC"
+-# endif
+-  /* __INTEL_COMPILER = VRP */
+-# define COMPILER_VERSION_MAJOR DEC(__INTEL_COMPILER/100)
+-# define COMPILER_VERSION_MINOR DEC(__INTEL_COMPILER/10 % 10)
+-# if defined(__INTEL_COMPILER_UPDATE)
+-#  define COMPILER_VERSION_PATCH DEC(__INTEL_COMPILER_UPDATE)
+-# else
+-#  define COMPILER_VERSION_PATCH DEC(__INTEL_COMPILER   % 10)
+-# endif
+-# if defined(__INTEL_COMPILER_BUILD_DATE)
+-  /* __INTEL_COMPILER_BUILD_DATE = YYYYMMDD */
+-#  define COMPILER_VERSION_TWEAK DEC(__INTEL_COMPILER_BUILD_DATE)
+-# endif
+-# if defined(_MSC_VER)
+-   /* _MSC_VER = VVRR */
+-#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+-#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+-# endif
+-
+-#elif defined(__PATHCC__)
+-# define COMPILER_ID "PathScale"
+-# define COMPILER_VERSION_MAJOR DEC(__PATHCC__)
+-# define COMPILER_VERSION_MINOR DEC(__PATHCC_MINOR__)
+-# if defined(__PATHCC_PATCHLEVEL__)
+-#  define COMPILER_VERSION_PATCH DEC(__PATHCC_PATCHLEVEL__)
+-# endif
+-
+-#elif defined(__BORLANDC__) && defined(__CODEGEARC_VERSION__)
+-# define COMPILER_ID "Embarcadero"
+-# define COMPILER_VERSION_MAJOR HEX(__CODEGEARC_VERSION__>>24 & 0x00FF)
+-# define COMPILER_VERSION_MINOR HEX(__CODEGEARC_VERSION__>>16 & 0x00FF)
+-# define COMPILER_VERSION_PATCH DEC(__CODEGEARC_VERSION__     & 0xFFFF)
+-
+-#elif defined(__BORLANDC__)
+-# define COMPILER_ID "Borland"
+-  /* __BORLANDC__ = 0xVRR */
+-# define COMPILER_VERSION_MAJOR HEX(__BORLANDC__>>8)
+-# define COMPILER_VERSION_MINOR HEX(__BORLANDC__ & 0xFF)
+-
+-#elif defined(__WATCOMC__) && __WATCOMC__ < 1200
+-# define COMPILER_ID "Watcom"
+-   /* __WATCOMC__ = VVRR */
+-# define COMPILER_VERSION_MAJOR DEC(__WATCOMC__ / 100)
+-# define COMPILER_VERSION_MINOR DEC((__WATCOMC__ / 10) % 10)
+-# if (__WATCOMC__ % 10) > 0
+-#  define COMPILER_VERSION_PATCH DEC(__WATCOMC__ % 10)
+-# endif
+-
+-#elif defined(__WATCOMC__)
+-# define COMPILER_ID "OpenWatcom"
+-   /* __WATCOMC__ = VVRP + 1100 */
+-# define COMPILER_VERSION_MAJOR DEC((__WATCOMC__ - 1100) / 100)
+-# define COMPILER_VERSION_MINOR DEC((__WATCOMC__ / 10) % 10)
+-# if (__WATCOMC__ % 10) > 0
+-#  define COMPILER_VERSION_PATCH DEC(__WATCOMC__ % 10)
+-# endif
+-
+-#elif defined(__SUNPRO_C)
+-# define COMPILER_ID "SunPro"
+-# if __SUNPRO_C >= 0x5100
+-   /* __SUNPRO_C = 0xVRRP */
+-#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_C>>12)
+-#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_C>>4 & 0xFF)
+-#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_C    & 0xF)
+-# else
+-   /* __SUNPRO_CC = 0xVRP */
+-#  define COMPILER_VERSION_MAJOR HEX(__SUNPRO_C>>8)
+-#  define COMPILER_VERSION_MINOR HEX(__SUNPRO_C>>4 & 0xF)
+-#  define COMPILER_VERSION_PATCH HEX(__SUNPRO_C    & 0xF)
+-# endif
+-
+-#elif defined(__HP_cc)
+-# define COMPILER_ID "HP"
+-  /* __HP_cc = VVRRPP */
+-# define COMPILER_VERSION_MAJOR DEC(__HP_cc/10000)
+-# define COMPILER_VERSION_MINOR DEC(__HP_cc/100 % 100)
+-# define COMPILER_VERSION_PATCH DEC(__HP_cc     % 100)
+-
+-#elif defined(__DECC)
+-# define COMPILER_ID "Compaq"
+-  /* __DECC_VER = VVRRTPPPP */
+-# define COMPILER_VERSION_MAJOR DEC(__DECC_VER/10000000)
+-# define COMPILER_VERSION_MINOR DEC(__DECC_VER/100000  % 100)
+-# define COMPILER_VERSION_PATCH DEC(__DECC_VER         % 10000)
+-
+-#elif defined(__IBMC__) && defined(__COMPILER_VER__)
+-# define COMPILER_ID "zOS"
+-# if defined(__ibmxl__)
+-#  define COMPILER_VERSION_MAJOR DEC(__ibmxl_version__)
+-#  define COMPILER_VERSION_MINOR DEC(__ibmxl_release__)
+-#  define COMPILER_VERSION_PATCH DEC(__ibmxl_modification__)
+-#  define COMPILER_VERSION_TWEAK DEC(__ibmxl_ptf_fix_level__)
+-# else
+-   /* __IBMC__ = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(__IBMC__/100)
+-#  define COMPILER_VERSION_MINOR DEC(__IBMC__/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(__IBMC__    % 10)
+-# endif
+-
+-
+-#elif defined(__ibmxl__) || (defined(__IBMC__) && !defined(__COMPILER_VER__) && __IBMC__ >= 800)
+-# define COMPILER_ID "XL"
+-# if defined(__ibmxl__)
+-#  define COMPILER_VERSION_MAJOR DEC(__ibmxl_version__)
+-#  define COMPILER_VERSION_MINOR DEC(__ibmxl_release__)
+-#  define COMPILER_VERSION_PATCH DEC(__ibmxl_modification__)
+-#  define COMPILER_VERSION_TWEAK DEC(__ibmxl_ptf_fix_level__)
+-# else
+-   /* __IBMC__ = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(__IBMC__/100)
+-#  define COMPILER_VERSION_MINOR DEC(__IBMC__/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(__IBMC__    % 10)
+-# endif
+-
+-
+-#elif defined(__IBMC__) && !defined(__COMPILER_VER__) && __IBMC__ < 800
+-# define COMPILER_ID "VisualAge"
+-# if defined(__ibmxl__)
+-#  define COMPILER_VERSION_MAJOR DEC(__ibmxl_version__)
+-#  define COMPILER_VERSION_MINOR DEC(__ibmxl_release__)
+-#  define COMPILER_VERSION_PATCH DEC(__ibmxl_modification__)
+-#  define COMPILER_VERSION_TWEAK DEC(__ibmxl_ptf_fix_level__)
+-# else
+-   /* __IBMC__ = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(__IBMC__/100)
+-#  define COMPILER_VERSION_MINOR DEC(__IBMC__/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(__IBMC__    % 10)
+-# endif
+-
+-
+-#elif defined(__PGI)
+-# define COMPILER_ID "PGI"
+-# define COMPILER_VERSION_MAJOR DEC(__PGIC__)
+-# define COMPILER_VERSION_MINOR DEC(__PGIC_MINOR__)
+-# if defined(__PGIC_PATCHLEVEL__)
+-#  define COMPILER_VERSION_PATCH DEC(__PGIC_PATCHLEVEL__)
+-# endif
+-
+-#elif defined(_CRAYC)
+-# define COMPILER_ID "Cray"
+-# define COMPILER_VERSION_MAJOR DEC(_RELEASE_MAJOR)
+-# define COMPILER_VERSION_MINOR DEC(_RELEASE_MINOR)
+-
+-#elif defined(__TI_COMPILER_VERSION__)
+-# define COMPILER_ID "TI"
+-  /* __TI_COMPILER_VERSION__ = VVVRRRPPP */
+-# define COMPILER_VERSION_MAJOR DEC(__TI_COMPILER_VERSION__/1000000)
+-# define COMPILER_VERSION_MINOR DEC(__TI_COMPILER_VERSION__/1000   % 1000)
+-# define COMPILER_VERSION_PATCH DEC(__TI_COMPILER_VERSION__        % 1000)
+-
+-#elif defined(__FUJITSU) || defined(__FCC_VERSION) || defined(__fcc_version)
+-# define COMPILER_ID "Fujitsu"
+-
+-#elif defined(__ghs__)
+-# define COMPILER_ID "GHS"
+-/* __GHS_VERSION_NUMBER = VVVVRP */
+-# ifdef __GHS_VERSION_NUMBER
+-# define COMPILER_VERSION_MAJOR DEC(__GHS_VERSION_NUMBER / 100)
+-# define COMPILER_VERSION_MINOR DEC(__GHS_VERSION_NUMBER / 10 % 10)
+-# define COMPILER_VERSION_PATCH DEC(__GHS_VERSION_NUMBER      % 10)
+-# endif
+-
+-#elif defined(__TINYC__)
+-# define COMPILER_ID "TinyCC"
+-
+-#elif defined(__BCC__)
+-# define COMPILER_ID "Bruce"
+-
+-#elif defined(__SCO_VERSION__)
+-# define COMPILER_ID "SCO"
+-
+-#elif defined(__ARMCC_VERSION) && !defined(__clang__)
+-# define COMPILER_ID "ARMCC"
+-#if __ARMCC_VERSION >= 1000000
+-  /* __ARMCC_VERSION = VRRPPPP */
+-  # define COMPILER_VERSION_MAJOR DEC(__ARMCC_VERSION/1000000)
+-  # define COMPILER_VERSION_MINOR DEC(__ARMCC_VERSION/10000 % 100)
+-  # define COMPILER_VERSION_PATCH DEC(__ARMCC_VERSION     % 10000)
+-#else
+-  /* __ARMCC_VERSION = VRPPPP */
+-  # define COMPILER_VERSION_MAJOR DEC(__ARMCC_VERSION/100000)
+-  # define COMPILER_VERSION_MINOR DEC(__ARMCC_VERSION/10000 % 10)
+-  # define COMPILER_VERSION_PATCH DEC(__ARMCC_VERSION    % 10000)
+-#endif
+-
+-
+-#elif defined(__clang__) && defined(__apple_build_version__)
+-# define COMPILER_ID "AppleClang"
+-# if defined(_MSC_VER)
+-#  define SIMULATE_ID "MSVC"
+-# endif
+-# define COMPILER_VERSION_MAJOR DEC(__clang_major__)
+-# define COMPILER_VERSION_MINOR DEC(__clang_minor__)
+-# define COMPILER_VERSION_PATCH DEC(__clang_patchlevel__)
+-# if defined(_MSC_VER)
+-   /* _MSC_VER = VVRR */
+-#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+-#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+-# endif
+-# define COMPILER_VERSION_TWEAK DEC(__apple_build_version__)
+-
+-#elif defined(__clang__)
+-# define COMPILER_ID "Clang"
+-# if defined(_MSC_VER)
+-#  define SIMULATE_ID "MSVC"
+-# endif
+-# define COMPILER_VERSION_MAJOR DEC(__clang_major__)
+-# define COMPILER_VERSION_MINOR DEC(__clang_minor__)
+-# define COMPILER_VERSION_PATCH DEC(__clang_patchlevel__)
+-# if defined(_MSC_VER)
+-   /* _MSC_VER = VVRR */
+-#  define SIMULATE_VERSION_MAJOR DEC(_MSC_VER / 100)
+-#  define SIMULATE_VERSION_MINOR DEC(_MSC_VER % 100)
+-# endif
+-
+-#elif defined(__GNUC__)
+-# define COMPILER_ID "GNU"
+-# define COMPILER_VERSION_MAJOR DEC(__GNUC__)
+-# if defined(__GNUC_MINOR__)
+-#  define COMPILER_VERSION_MINOR DEC(__GNUC_MINOR__)
+-# endif
+-# if defined(__GNUC_PATCHLEVEL__)
+-#  define COMPILER_VERSION_PATCH DEC(__GNUC_PATCHLEVEL__)
+-# endif
+-
+-#elif defined(_MSC_VER)
+-# define COMPILER_ID "MSVC"
+-  /* _MSC_VER = VVRR */
+-# define COMPILER_VERSION_MAJOR DEC(_MSC_VER / 100)
+-# define COMPILER_VERSION_MINOR DEC(_MSC_VER % 100)
+-# if defined(_MSC_FULL_VER)
+-#  if _MSC_VER >= 1400
+-    /* _MSC_FULL_VER = VVRRPPPPP */
+-#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 100000)
+-#  else
+-    /* _MSC_FULL_VER = VVRRPPPP */
+-#   define COMPILER_VERSION_PATCH DEC(_MSC_FULL_VER % 10000)
+-#  endif
+-# endif
+-# if defined(_MSC_BUILD)
+-#  define COMPILER_VERSION_TWEAK DEC(_MSC_BUILD)
+-# endif
+-
+-#elif defined(__VISUALDSPVERSION__) || defined(__ADSPBLACKFIN__) || defined(__ADSPTS__) || defined(__ADSP21000__)
+-# define COMPILER_ID "ADSP"
+-#if defined(__VISUALDSPVERSION__)
+-  /* __VISUALDSPVERSION__ = 0xVVRRPP00 */
+-# define COMPILER_VERSION_MAJOR HEX(__VISUALDSPVERSION__>>24)
+-# define COMPILER_VERSION_MINOR HEX(__VISUALDSPVERSION__>>16 & 0xFF)
+-# define COMPILER_VERSION_PATCH HEX(__VISUALDSPVERSION__>>8  & 0xFF)
+-#endif
+-
+-#elif defined(__IAR_SYSTEMS_ICC__) || defined(__IAR_SYSTEMS_ICC)
+-# define COMPILER_ID "IAR"
+-# if defined(__VER__) && defined(__ICCARM__)
+-#  define COMPILER_VERSION_MAJOR DEC((__VER__) / 1000000)
+-#  define COMPILER_VERSION_MINOR DEC(((__VER__) / 1000) % 1000)
+-#  define COMPILER_VERSION_PATCH DEC((__VER__) % 1000)
+-#  define COMPILER_VERSION_INTERNAL DEC(__IAR_SYSTEMS_ICC__)
+-# elif defined(__VER__) && defined(__ICCAVR__)
+-#  define COMPILER_VERSION_MAJOR DEC((__VER__) / 100)
+-#  define COMPILER_VERSION_MINOR DEC((__VER__) - (((__VER__) / 100)*100))
+-#  define COMPILER_VERSION_PATCH DEC(__SUBVERSION__)
+-#  define COMPILER_VERSION_INTERNAL DEC(__IAR_SYSTEMS_ICC__)
+-# endif
+-
+-#elif defined(__SDCC_VERSION_MAJOR) || defined(SDCC)
+-# define COMPILER_ID "SDCC"
+-# if defined(__SDCC_VERSION_MAJOR)
+-#  define COMPILER_VERSION_MAJOR DEC(__SDCC_VERSION_MAJOR)
+-#  define COMPILER_VERSION_MINOR DEC(__SDCC_VERSION_MINOR)
+-#  define COMPILER_VERSION_PATCH DEC(__SDCC_VERSION_PATCH)
+-# else
+-  /* SDCC = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(SDCC/100)
+-#  define COMPILER_VERSION_MINOR DEC(SDCC/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(SDCC    % 10)
+-# endif
+-
+-#elif defined(_SGI_COMPILER_VERSION) || defined(_COMPILER_VERSION)
+-# define COMPILER_ID "MIPSpro"
+-# if defined(_SGI_COMPILER_VERSION)
+-  /* _SGI_COMPILER_VERSION = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(_SGI_COMPILER_VERSION/100)
+-#  define COMPILER_VERSION_MINOR DEC(_SGI_COMPILER_VERSION/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(_SGI_COMPILER_VERSION    % 10)
+-# else
+-  /* _COMPILER_VERSION = VRP */
+-#  define COMPILER_VERSION_MAJOR DEC(_COMPILER_VERSION/100)
+-#  define COMPILER_VERSION_MINOR DEC(_COMPILER_VERSION/10 % 10)
+-#  define COMPILER_VERSION_PATCH DEC(_COMPILER_VERSION    % 10)
+-# endif
+-
+-
+-/* These compilers are either not known or too old to define an
+-  identification macro.  Try to identify the platform and guess that
+-  it is the native compiler.  */
+-#elif defined(__hpux) || defined(__hpua)
+-# define COMPILER_ID "HP"
+-
+-#else /* unknown compiler */
+-# define COMPILER_ID ""
+-#endif
+-
+-/* Construct the string literal in pieces to prevent the source from
+-   getting matched.  Store it in a pointer rather than an array
+-   because some compilers will just produce instructions to fill the
+-   array rather than assigning a pointer to a static array.  */
+-char const* info_compiler = "INFO" ":" "compiler[" COMPILER_ID "]";
+-#ifdef SIMULATE_ID
+-char const* info_simulate = "INFO" ":" "simulate[" SIMULATE_ID "]";
+-#endif
+-
+-#ifdef __QNXNTO__
+-char const* qnxnto = "INFO" ":" "qnxnto[]";
+-#endif
+-
+-#if defined(__CRAYXE) || defined(__CRAYXC)
+-char const *info_cray = "INFO" ":" "compiler_wrapper[CrayPrgEnv]";
+-#endif
+-
+-#define STRINGIFY_HELPER(X) #X
+-#define STRINGIFY(X) STRINGIFY_HELPER(X)
+-
+-/* Identify known platforms by name.  */
+-#if defined(__linux) || defined(__linux__) || defined(linux)
+-# define PLATFORM_ID "Linux"
+-
+-#elif defined(__CYGWIN__)
+-# define PLATFORM_ID "Cygwin"
+-
+-#elif defined(__MINGW32__)
+-# define PLATFORM_ID "MinGW"
+-
+-#elif defined(__APPLE__)
+-# define PLATFORM_ID "Darwin"
+-
+-#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+-# define PLATFORM_ID "Windows"
+-
+-#elif defined(__FreeBSD__) || defined(__FreeBSD)
+-# define PLATFORM_ID "FreeBSD"
+-
+-#elif defined(__NetBSD__) || defined(__NetBSD)
+-# define PLATFORM_ID "NetBSD"
+-
+-#elif defined(__OpenBSD__) || defined(__OPENBSD)
+-# define PLATFORM_ID "OpenBSD"
+-
+-#elif defined(__sun) || defined(sun)
+-# define PLATFORM_ID "SunOS"
+-
+-#elif defined(_AIX) || defined(__AIX) || defined(__AIX__) || defined(__aix) || defined(__aix__)
+-# define PLATFORM_ID "AIX"
+-
+-#elif defined(__hpux) || defined(__hpux__)
+-# define PLATFORM_ID "HP-UX"
+-
+-#elif defined(__HAIKU__)
+-# define PLATFORM_ID "Haiku"
+-
+-#elif defined(__BeOS) || defined(__BEOS__) || defined(_BEOS)
+-# define PLATFORM_ID "BeOS"
+-
+-#elif defined(__QNX__) || defined(__QNXNTO__)
+-# define PLATFORM_ID "QNX"
+-
+-#elif defined(__tru64) || defined(_tru64) || defined(__TRU64__)
+-# define PLATFORM_ID "Tru64"
+-
+-#elif defined(__riscos) || defined(__riscos__)
+-# define PLATFORM_ID "RISCos"
+-
+-#elif defined(__sinix) || defined(__sinix__) || defined(__SINIX__)
+-# define PLATFORM_ID "SINIX"
+-
+-#elif defined(__UNIX_SV__)
+-# define PLATFORM_ID "UNIX_SV"
+-
+-#elif defined(__bsdos__)
+-# define PLATFORM_ID "BSDOS"
+-
+-#elif defined(_MPRAS) || defined(MPRAS)
+-# define PLATFORM_ID "MP-RAS"
+-
+-#elif defined(__osf) || defined(__osf__)
+-# define PLATFORM_ID "OSF1"
+-
+-#elif defined(_SCO_SV) || defined(SCO_SV) || defined(sco_sv)
+-# define PLATFORM_ID "SCO_SV"
+-
+-#elif defined(__ultrix) || defined(__ultrix__) || defined(_ULTRIX)
+-# define PLATFORM_ID "ULTRIX"
+-
+-#elif defined(__XENIX__) || defined(_XENIX) || defined(XENIX)
+-# define PLATFORM_ID "Xenix"
+-
+-#elif defined(__WATCOMC__)
+-# if defined(__LINUX__)
+-#  define PLATFORM_ID "Linux"
+-
+-# elif defined(__DOS__)
+-#  define PLATFORM_ID "DOS"
+-
+-# elif defined(__OS2__)
+-#  define PLATFORM_ID "OS2"
+-
+-# elif defined(__WINDOWS__)
+-#  define PLATFORM_ID "Windows3x"
+-
+-# else /* unknown platform */
+-#  define PLATFORM_ID
+-# endif
+-
+-#elif defined(__INTEGRITY)
+-# if defined(INT_178B)
+-#  define PLATFORM_ID "Integrity178"
+-
+-# else /* regular Integrity */
+-#  define PLATFORM_ID "Integrity"
+-# endif
+-
+-#else /* unknown platform */
+-# define PLATFORM_ID
+-
+-#endif
+-
+-/* For windows compilers MSVC and Intel we can determine
+-   the architecture of the compiler being used.  This is because
+-   the compilers do not have flags that can change the architecture,
+-   but rather depend on which compiler is being used
+-*/
+-#if defined(_WIN32) && defined(_MSC_VER)
+-# if defined(_M_IA64)
+-#  define ARCHITECTURE_ID "IA64"
+-
+-# elif defined(_M_X64) || defined(_M_AMD64)
+-#  define ARCHITECTURE_ID "x64"
+-
+-# elif defined(_M_IX86)
+-#  define ARCHITECTURE_ID "X86"
+-
+-# elif defined(_M_ARM64)
+-#  define ARCHITECTURE_ID "ARM64"
+-
+-# elif defined(_M_ARM)
+-#  if _M_ARM == 4
+-#   define ARCHITECTURE_ID "ARMV4I"
+-#  elif _M_ARM == 5
+-#   define ARCHITECTURE_ID "ARMV5I"
+-#  else
+-#   define ARCHITECTURE_ID "ARMV" STRINGIFY(_M_ARM)
+-#  endif
+-
+-# elif defined(_M_MIPS)
+-#  define ARCHITECTURE_ID "MIPS"
+-
+-# elif defined(_M_SH)
+-#  define ARCHITECTURE_ID "SHx"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-
+-#elif defined(__WATCOMC__)
+-# if defined(_M_I86)
+-#  define ARCHITECTURE_ID "I86"
+-
+-# elif defined(_M_IX86)
+-#  define ARCHITECTURE_ID "X86"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-
+-#elif defined(__IAR_SYSTEMS_ICC__) || defined(__IAR_SYSTEMS_ICC)
+-# if defined(__ICCARM__)
+-#  define ARCHITECTURE_ID "ARM"
+-
+-# elif defined(__ICCAVR__)
+-#  define ARCHITECTURE_ID "AVR"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-
+-#elif defined(__ghs__)
+-# if defined(__PPC64__)
+-#  define ARCHITECTURE_ID "PPC64"
+-
+-# elif defined(__ppc__)
+-#  define ARCHITECTURE_ID "PPC"
+-
+-# elif defined(__ARM__)
+-#  define ARCHITECTURE_ID "ARM"
+-
+-# elif defined(__x86_64__)
+-#  define ARCHITECTURE_ID "x64"
+-
+-# elif defined(__i386__)
+-#  define ARCHITECTURE_ID "X86"
+-
+-# else /* unknown architecture */
+-#  define ARCHITECTURE_ID ""
+-# endif
+-#else
+-#  define ARCHITECTURE_ID
+-#endif
+-
+-/* Convert integer to decimal digit literals.  */
+-#define DEC(n)                   \
+-  ('0' + (((n) / 10000000)%10)), \
+-  ('0' + (((n) / 1000000)%10)),  \
+-  ('0' + (((n) / 100000)%10)),   \
+-  ('0' + (((n) / 10000)%10)),    \
+-  ('0' + (((n) / 1000)%10)),     \
+-  ('0' + (((n) / 100)%10)),      \
+-  ('0' + (((n) / 10)%10)),       \
+-  ('0' +  ((n) % 10))
+-
+-/* Convert integer to hex digit literals.  */
+-#define HEX(n)             \
+-  ('0' + ((n)>>28 & 0xF)), \
+-  ('0' + ((n)>>24 & 0xF)), \
+-  ('0' + ((n)>>20 & 0xF)), \
+-  ('0' + ((n)>>16 & 0xF)), \
+-  ('0' + ((n)>>12 & 0xF)), \
+-  ('0' + ((n)>>8  & 0xF)), \
+-  ('0' + ((n)>>4  & 0xF)), \
+-  ('0' + ((n)     & 0xF))
+-
+-/* Construct a string literal encoding the version number components. */
+-#ifdef COMPILER_VERSION_MAJOR
+-char const info_version[] = {
+-  'I', 'N', 'F', 'O', ':',
+-  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','[',
+-  COMPILER_VERSION_MAJOR,
+-# ifdef COMPILER_VERSION_MINOR
+-  '.', COMPILER_VERSION_MINOR,
+-#  ifdef COMPILER_VERSION_PATCH
+-   '.', COMPILER_VERSION_PATCH,
+-#   ifdef COMPILER_VERSION_TWEAK
+-    '.', COMPILER_VERSION_TWEAK,
+-#   endif
+-#  endif
+-# endif
+-  ']','\0'};
+-#endif
+-
+-/* Construct a string literal encoding the internal version number. */
+-#ifdef COMPILER_VERSION_INTERNAL
+-char const info_version_internal[] = {
+-  'I', 'N', 'F', 'O', ':',
+-  'c','o','m','p','i','l','e','r','_','v','e','r','s','i','o','n','_',
+-  'i','n','t','e','r','n','a','l','[',
+-  COMPILER_VERSION_INTERNAL,']','\0'};
+-#endif
+-
+-/* Construct a string literal encoding the version number components. */
+-#ifdef SIMULATE_VERSION_MAJOR
+-char const info_simulate_version[] = {
+-  'I', 'N', 'F', 'O', ':',
+-  's','i','m','u','l','a','t','e','_','v','e','r','s','i','o','n','[',
+-  SIMULATE_VERSION_MAJOR,
+-# ifdef SIMULATE_VERSION_MINOR
+-  '.', SIMULATE_VERSION_MINOR,
+-#  ifdef SIMULATE_VERSION_PATCH
+-   '.', SIMULATE_VERSION_PATCH,
+-#   ifdef SIMULATE_VERSION_TWEAK
+-    '.', SIMULATE_VERSION_TWEAK,
+-#   endif
+-#  endif
+-# endif
+-  ']','\0'};
+-#endif
+-
+-/* Construct the string literal in pieces to prevent the source from
+-   getting matched.  Store it in a pointer rather than an array
+-   because some compilers will just produce instructions to fill the
+-   array rather than assigning a pointer to a static array.  */
+-char const* info_platform = "INFO" ":" "platform[" PLATFORM_ID "]";
+-char const* info_arch = "INFO" ":" "arch[" ARCHITECTURE_ID "]";
+-
+-
+-
+-
+-#if !defined(__STDC__)
+-# if (defined(_MSC_VER) && !defined(__clang__)) \
+-  || (defined(__ibmxl__) || defined(__IBMC__))
+-#  define C_DIALECT "90"
+-# else
+-#  define C_DIALECT
+-# endif
+-#elif __STDC_VERSION__ >= 201000L
+-# define C_DIALECT "11"
+-#elif __STDC_VERSION__ >= 199901L
+-# define C_DIALECT "99"
+-#else
+-# define C_DIALECT "90"
+-#endif
+-const char* info_language_dialect_default =
+-  "INFO" ":" "dialect_default[" C_DIALECT "]";
+-
+-/*--------------------------------------------------------------------------*/
+-
+-#ifdef ID_VOID_MAIN
+-void main() {}
+-#else
+-# if defined(__CLASSIC_C__)
+-int main(argc, argv) int argc; char *argv[];
+-# else
+-int main(int argc, char* argv[])
+-# endif
+-{
+-  int require = 0;
+-  require += info_compiler[argc];
+-  require += info_platform[argc];
+-  require += info_arch[argc];
+-#ifdef COMPILER_VERSION_MAJOR
+-  require += info_version[argc];
+-#endif
+-#ifdef COMPILER_VERSION_INTERNAL
+-  require += info_version_internal[argc];
+-#endif
+-#ifdef SIMULATE_ID
+-  require += info_simulate[argc];
+-#endif
+-#ifdef SIMULATE_VERSION_MAJOR
+-  require += info_simulate_version[argc];
+-#endif
+-#if defined(__CRAYXE) || defined(__CRAYXC)
+-  require += info_cray[argc];
+-#endif
+-  require += info_language_dialect_default[argc];
+-  (void)argv;
+-  return require;
+-}
+-#endif
+Index: cmake-build-debug/CMakeFiles/3.14.5/CMakeCXXCompiler.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- cmake-build-debug/CMakeFiles/3.14.5/CMakeCXXCompiler.cmake	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
++++ cmake-build-debug/CMakeFiles/3.14.5/CMakeCXXCompiler.cmake	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
+@@ -1,78 +0,0 @@
+-set(CMAKE_CXX_COMPILER "/Library/Developer/CommandLineTools/usr/bin/c++")
+-set(CMAKE_CXX_COMPILER_ARG1 "")
+-set(CMAKE_CXX_COMPILER_ID "AppleClang")
+-set(CMAKE_CXX_COMPILER_VERSION "10.0.1.10010046")
+-set(CMAKE_CXX_COMPILER_VERSION_INTERNAL "")
+-set(CMAKE_CXX_COMPILER_WRAPPER "")
+-set(CMAKE_CXX_STANDARD_COMPUTED_DEFAULT "98")
+-set(CMAKE_CXX_COMPILE_FEATURES "cxx_std_98;cxx_template_template_parameters;cxx_std_11;cxx_alias_templates;cxx_alignas;cxx_alignof;cxx_attributes;cxx_auto_type;cxx_constexpr;cxx_decltype;cxx_decltype_incomplete_return_types;cxx_default_function_template_args;cxx_defaulted_functions;cxx_defaulted_move_initializers;cxx_delegating_constructors;cxx_deleted_functions;cxx_enum_forward_declarations;cxx_explicit_conversions;cxx_extended_friend_declarations;cxx_extern_templates;cxx_final;cxx_func_identifier;cxx_generalized_initializers;cxx_inheriting_constructors;cxx_inline_namespaces;cxx_lambdas;cxx_local_type_template_args;cxx_long_long_type;cxx_noexcept;cxx_nonstatic_member_init;cxx_nullptr;cxx_override;cxx_range_for;cxx_raw_string_literals;cxx_reference_qualified_functions;cxx_right_angle_brackets;cxx_rvalue_references;cxx_sizeof_member;cxx_static_assert;cxx_strong_enums;cxx_thread_local;cxx_trailing_return_types;cxx_unicode_literals;cxx_uniform_initialization;cxx_unrestricted_unions;cxx_user_literals;cxx_variadic_macros;cxx_variadic_templates;cxx_std_14;cxx_aggregate_default_initializers;cxx_attribute_deprecated;cxx_binary_literals;cxx_contextual_conversions;cxx_decltype_auto;cxx_digit_separators;cxx_generic_lambdas;cxx_lambda_init_captures;cxx_relaxed_constexpr;cxx_return_type_deduction;cxx_variable_templates;cxx_std_17")
+-set(CMAKE_CXX98_COMPILE_FEATURES "cxx_std_98;cxx_template_template_parameters")
+-set(CMAKE_CXX11_COMPILE_FEATURES "cxx_std_11;cxx_alias_templates;cxx_alignas;cxx_alignof;cxx_attributes;cxx_auto_type;cxx_constexpr;cxx_decltype;cxx_decltype_incomplete_return_types;cxx_default_function_template_args;cxx_defaulted_functions;cxx_defaulted_move_initializers;cxx_delegating_constructors;cxx_deleted_functions;cxx_enum_forward_declarations;cxx_explicit_conversions;cxx_extended_friend_declarations;cxx_extern_templates;cxx_final;cxx_func_identifier;cxx_generalized_initializers;cxx_inheriting_constructors;cxx_inline_namespaces;cxx_lambdas;cxx_local_type_template_args;cxx_long_long_type;cxx_noexcept;cxx_nonstatic_member_init;cxx_nullptr;cxx_override;cxx_range_for;cxx_raw_string_literals;cxx_reference_qualified_functions;cxx_right_angle_brackets;cxx_rvalue_references;cxx_sizeof_member;cxx_static_assert;cxx_strong_enums;cxx_thread_local;cxx_trailing_return_types;cxx_unicode_literals;cxx_uniform_initialization;cxx_unrestricted_unions;cxx_user_literals;cxx_variadic_macros;cxx_variadic_templates")
+-set(CMAKE_CXX14_COMPILE_FEATURES "cxx_std_14;cxx_aggregate_default_initializers;cxx_attribute_deprecated;cxx_binary_literals;cxx_contextual_conversions;cxx_decltype_auto;cxx_digit_separators;cxx_generic_lambdas;cxx_lambda_init_captures;cxx_relaxed_constexpr;cxx_return_type_deduction;cxx_variable_templates")
+-set(CMAKE_CXX17_COMPILE_FEATURES "cxx_std_17")
+-set(CMAKE_CXX20_COMPILE_FEATURES "")
+-
+-set(CMAKE_CXX_PLATFORM_ID "Darwin")
+-set(CMAKE_CXX_SIMULATE_ID "")
+-set(CMAKE_CXX_SIMULATE_VERSION "")
+-
+-
+-
+-set(CMAKE_AR "/Library/Developer/CommandLineTools/usr/bin/ar")
+-set(CMAKE_CXX_COMPILER_AR "")
+-set(CMAKE_RANLIB "/Library/Developer/CommandLineTools/usr/bin/ranlib")
+-set(CMAKE_CXX_COMPILER_RANLIB "")
+-set(CMAKE_LINKER "/Library/Developer/CommandLineTools/usr/bin/ld")
+-set(CMAKE_MT "")
+-set(CMAKE_COMPILER_IS_GNUCXX )
+-set(CMAKE_CXX_COMPILER_LOADED 1)
+-set(CMAKE_CXX_COMPILER_WORKS TRUE)
+-set(CMAKE_CXX_ABI_COMPILED TRUE)
+-set(CMAKE_COMPILER_IS_MINGW )
+-set(CMAKE_COMPILER_IS_CYGWIN )
+-if(CMAKE_COMPILER_IS_CYGWIN)
+-  set(CYGWIN 1)
+-  set(UNIX 1)
+-endif()
+-
+-set(CMAKE_CXX_COMPILER_ENV_VAR "CXX")
+-
+-if(CMAKE_COMPILER_IS_MINGW)
+-  set(MINGW 1)
+-endif()
+-set(CMAKE_CXX_COMPILER_ID_RUN 1)
+-set(CMAKE_CXX_IGNORE_EXTENSIONS inl;h;hpp;HPP;H;o;O;obj;OBJ;def;DEF;rc;RC)
+-set(CMAKE_CXX_SOURCE_FILE_EXTENSIONS C;M;c++;cc;cpp;cxx;mm;CPP)
+-set(CMAKE_CXX_LINKER_PREFERENCE 30)
+-set(CMAKE_CXX_LINKER_PREFERENCE_PROPAGATES 1)
+-
+-# Save compiler ABI information.
+-set(CMAKE_CXX_SIZEOF_DATA_PTR "8")
+-set(CMAKE_CXX_COMPILER_ABI "")
+-set(CMAKE_CXX_LIBRARY_ARCHITECTURE "")
+-
+-if(CMAKE_CXX_SIZEOF_DATA_PTR)
+-  set(CMAKE_SIZEOF_VOID_P "${CMAKE_CXX_SIZEOF_DATA_PTR}")
+-endif()
+-
+-if(CMAKE_CXX_COMPILER_ABI)
+-  set(CMAKE_INTERNAL_PLATFORM_ABI "${CMAKE_CXX_COMPILER_ABI}")
+-endif()
+-
+-if(CMAKE_CXX_LIBRARY_ARCHITECTURE)
+-  set(CMAKE_LIBRARY_ARCHITECTURE "")
+-endif()
+-
+-set(CMAKE_CXX_CL_SHOWINCLUDES_PREFIX "")
+-if(CMAKE_CXX_CL_SHOWINCLUDES_PREFIX)
+-  set(CMAKE_CL_SHOWINCLUDES_PREFIX "${CMAKE_CXX_CL_SHOWINCLUDES_PREFIX}")
+-endif()
+-
+-
+-
+-
+-
+-set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES "/Library/Developer/CommandLineTools/usr/include/c++/v1;/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include;/Library/Developer/CommandLineTools/usr/include;/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/usr/include")
+-set(CMAKE_CXX_IMPLICIT_LINK_LIBRARIES "c++")
+-set(CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/usr/lib")
+-set(CMAKE_CXX_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks")
+Index: cmake-build-debug/CMakeFiles/3.14.5/CMakeSystem.cmake
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- cmake-build-debug/CMakeFiles/3.14.5/CMakeSystem.cmake	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
++++ cmake-build-debug/CMakeFiles/3.14.5/CMakeSystem.cmake	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
+@@ -1,15 +0,0 @@
+-set(CMAKE_HOST_SYSTEM "Darwin-18.7.0")
+-set(CMAKE_HOST_SYSTEM_NAME "Darwin")
+-set(CMAKE_HOST_SYSTEM_VERSION "18.7.0")
+-set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
+-
+-
+-
+-set(CMAKE_SYSTEM "Darwin-18.7.0")
+-set(CMAKE_SYSTEM_NAME "Darwin")
+-set(CMAKE_SYSTEM_VERSION "18.7.0")
+-set(CMAKE_SYSTEM_PROCESSOR "x86_64")
+-
+-set(CMAKE_CROSSCOMPILING "FALSE")
+-
+-set(CMAKE_SYSTEM_LOADED 1)
+Index: src/ciLisp.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#include \"ciLisp.h\"\r\n\r\n\r\nvoid yyerror(char *s) {\r\n    fprintf(stderr, \"\\nERROR: %s\\n\", s);\r\n    // note stderr that normally defaults to stdout, but can be redirected: ./src 2> src.log\r\n    // CLion will display stderr in a different color from stdin and stdout\r\n}\r\n\r\n// Array of string values for operations.\r\n// Must be in sync with funcs in the OPER_TYPE enum in order for resolveFunc to work.\r\nchar *funcNames[] = {\r\n        \"neg\",\r\n        \"abs\",\r\n        \"exp\",\r\n        \"sqrt\",\r\n        \"add\",\r\n        \"sub\",\r\n        \"mult\",\r\n        \"div\",\r\n        \"remainder\",\r\n        \"log\",\r\n        \"pow\",\r\n        \"max\",\r\n        \"min\",\r\n        \"exp2\",\r\n        \"cbrt\",\r\n        \"hypot\",\r\n        \"read\",\r\n        \"rand\",\r\n        \"print\",\r\n        \"equal\",\r\n        \"less\",\r\n        \"greater\",\r\n        \"\"\r\n};\r\n\r\nOPER_TYPE resolveFunc(char *funcName)\r\n{\r\n    int i = 0;\r\n    while (funcNames[i][0] != '\\0')\r\n    {\r\n        if (strcmp(funcNames[i], funcName) == 0)\r\n            return i;\r\n        i++;\r\n    }\r\n    return CUSTOM_OPER;\r\n}\r\n\r\n// Called when an INT or DOUBLE token is encountered (see ciLisp.l and ciLisp.y).\r\n// Creates an AST_NODE for the number.\r\n// Sets the AST_NODE's type to number.\r\n// Populates the value of the contained NUMBER_AST_NODE with the argument value.\r\n// SEE: AST_NODE, NUM_AST_NODE, AST_NODE_TYPE.\r\nAST_NODE *createNumberNode(double value, NUM_TYPE type)\r\n{\r\n    AST_NODE *node;\r\n    size_t nodeSize;\r\n\r\n    // allocate space for the fixed size and the variable part (union)\r\n    nodeSize = sizeof(AST_NODE);\r\n    if ((node = calloc(nodeSize, 1)) == NULL)\r\n        yyerror(\"Memory allocation failed!\");\r\n\r\n    // TODO set the AST_NODE's type, assign values to contained NUM_AST_NODE\r\n    node->type = NUM_NODE_TYPE;\r\n    if(type == DOUBLE_TYPE)\r\n    {\r\n        node->data.number.type = type;\r\n        node->data.number.dval = value;\r\n    }else\r\n    {\r\n        node->data.number.type = type;\r\n        node->data.number.dval = (long)value;\r\n    }\r\n    return node;\r\n}\r\n\r\n// Called when an f_expr is created (see ciLisp.y).\r\n// Creates an AST_NODE for a function call.\r\n// Sets the created AST_NODE's type to function.\r\n// Populates the contained FUNC_AST_NODE with:\r\n//      - An OPER_TYPE (the enum identifying the specific function being called)\r\n//      - 2 AST_NODEs, the operands\r\n// SEE: AST_NODE, FUNC_AST_NODE, AST_NODE_TYPE.\r\nAST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)\r\n{\r\n    AST_NODE *node;\r\n    size_t nodeSize;\r\n\r\n    // allocate space (or error)\r\n    nodeSize = sizeof(AST_NODE);\r\n    if ((node = calloc(nodeSize, 1)) == NULL)\r\n        yyerror(\"Memory allocation failed!\");\r\n\r\n    // TODO set the AST_NODE's type, populate contained FUNC_AST_NODE\r\n    // NOTE: you do not need to populate the \"ident\" field unless the function is type CUSTOM_OPER.\r\n    // When you do have a CUSTOM_OPER, you do NOT need to allocate and strcpy here.\r\n    // The funcName will be a string identifier for which space should be allocated in the tokenizer.\r\n    // For CUSTOM_OPER functions, you should simply assign the \"ident\" pointer to the passed in funcName.\r\n    // For functions other than CUSTOM_OPER, you should free the funcName after you're assigned the OPER_TYPE.\r\n    node->type = FUNC_NODE_TYPE;\r\n    node->data.function.op1 = op1;\r\n    node->data.function.op2 = op2;\r\n    node->data.function.oper = resolveFunc(funcName);\r\n    if(op1 != NULL)\r\n        op1->parent = node;\r\n    if(op2 != NULL)\r\n        op2->parent = node;\r\n\r\n\r\n    return node;\r\n}\r\n\r\n// Called after execution is done on the base of the tree.\r\n// (see the program production in ciLisp.y)\r\n// Recursively frees the whole abstract syntax tree.\r\n// You'll need to update and expand freeNode as the project develops.\r\nvoid freeNode(AST_NODE *node)\r\n{\r\n    if (!node)\r\n        return;\r\n\r\n    if (node->type == FUNC_NODE_TYPE)\r\n    {\r\n        // Recursive calls to free child nodes\r\n        freeNode(node->data.function.op1);\r\n        freeNode(node->data.function.op2);\r\n\r\n        // Free up identifier string if necessary\r\n        if (node->data.function.oper == CUSTOM_OPER)\r\n        {\r\n            free(node->data.function.ident);\r\n        }\r\n    }\r\n\r\n    free(node);\r\n}\r\n\r\n// Evaluates an AST_NODE.\r\n// returns a RET_VAL storing the the resulting value and type.\r\n// You'll need to update and expand eval (and the more specific eval functions below)\r\n// as the project develops.\r\nRET_VAL eval(AST_NODE *node)\r\n{\r\n    if (!node)\r\n        return (RET_VAL){INT_TYPE, NAN};\r\n\r\n    RET_VAL result = {INT_TYPE, NAN}; // see NUM_AST_NODE, because RET_VAL is just an alternative name for it.\r\n\r\n    // TODO complete the switch.\r\n    // Make calls to other eval functions based on node type.\r\n    // Use the results of those calls to populate result.\r\n    switch (node->type)\r\n    {\r\n        case FUNC_NODE_TYPE:\r\n            result = evalFuncNode(&node->data.function);\r\n            break;\r\n        case NUM_NODE_TYPE:\r\n            result = evalNumNode(&node->data.number);\r\n            break;\r\n        case SYM_NODE_TYPE:\r\n            result = evalSymNode(node);\r\n            break;\r\n        default:\r\n            yyerror(\"Invalid AST_NODE_TYPE, probably invalid writes somewhere!\");\r\n    }\r\n\r\n    return result;\r\n}  \r\n\r\n// returns a pointer to the NUM_AST_NODE (aka RET_VAL) referenced by node.\r\n// DOES NOT allocate space for a new RET_VAL.\r\nRET_VAL evalNumNode(NUM_AST_NODE *numNode)\r\n{\r\n    if (!numNode)\r\n        return (RET_VAL){INT_TYPE, NAN};\r\n\r\n    RET_VAL result = {INT_TYPE, NAN};\r\n\r\n    // TODO populate result with the values stored in the node.\r\n    // SEE: AST_NODE, AST_NODE_TYPE, NUM_AST_NODE\r\n\r\n    result.type = numNode->type;\r\n    result.dval = numNode->dval;\r\n\r\n    return result;\r\n}\r\n\r\n\r\nRET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)\r\n{\r\n    if (!funcNode)\r\n        return (RET_VAL){INT_TYPE, NAN};\r\n\r\n    RET_VAL result = {INT_TYPE, NAN};\r\n\r\n    // TODO populate result with the result of running the function on its operands.\r\n    // SEE: AST_NODE, AST_NODE_TYPE, FUNC_AST_NODE\r\n\r\n    RET_VAL op1 = eval(funcNode->op1);\r\n    RET_VAL op2 = eval(funcNode->op2);\r\n\r\n    double op1val = op1.dval;\r\n    double op2val = op2.dval;\r\n\r\n    if(op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE)\r\n        result.type = DOUBLE_TYPE;\r\n\r\n    switch (funcNode->oper)\r\n    {\r\n\r\n        case NEG_OPER:\r\n            result.dval = -op1val;\r\n            break;\r\n        case ABS_OPER:\r\n            result.dval = fabs(op1val);\r\n            break;\r\n        case EXP_OPER:\r\n            result.dval = exp(op1val);\r\n            break;\r\n        case SQRT_OPER:\r\n            result.dval = sqrt(op1val);\r\n            break;\r\n        case ADD_OPER:\r\n            result.dval = op1val+op2val;\r\n            break;\r\n        case SUB_OPER:\r\n            result.dval = op1val-op2val;\r\n            break;\r\n        case MULT_OPER:\r\n            result.dval = op1val*op2val;\r\n            break;\r\n        case DIV_OPER:\r\n            if(op2val == 0.0)\r\n                printf(\"dividing by zero \");\r\n            result.dval = op1val/op2val;\r\n            break;\r\n        case REMAINDER_OPER:\r\n            result.dval = remainder(op1val, op2val);\r\n            break;\r\n        case LOG_OPER:\r\n            result.dval = log(op1val);\r\n            break;\r\n        case POW_OPER:\r\n            result.dval = pow(op1val, op2val);\r\n            break;\r\n        case MAX_OPER:\r\n            result.dval = fmax(op1val, op2val);\r\n            break;\r\n        case MIN_OPER:\r\n            result.dval = fmin(op1val, op2val);\r\n            break;\r\n        case EXP2_OPER:\r\n            result.dval = exp2(op1val);\r\n            break;\r\n        case CBRT_OPER:\r\n            result.dval = cbrt(op1val);\r\n            break;\r\n        case HYPOT_OPER:\r\n            result.dval = hypot(op1val, op2val);\r\n            break;\r\n        case READ_OPER:break;\r\n        case RAND_OPER:break;\r\n        case PRINT_OPER:break;\r\n        case EQUAL_OPER:break;\r\n        case LESS_OPER:break;\r\n        case GREATER_OPER:break;\r\n        case CUSTOM_OPER:break;\r\n    }\r\n\r\n    return result;\r\n}\r\n\r\nRET_VAL evalSymNode(AST_NODE* node)\r\n{\r\n    if (!node)\r\n        return (RET_VAL){INT_TYPE, NAN};\r\n\r\n\r\n    AST_NODE* parent = node;\r\n    SYMBOL_TABLE_NODE* curNode;\r\n    while(parent != NULL)\r\n    {\r\n        curNode = parent->symbolTable;\r\n        while (curNode != NULL) {\r\n            if (strcmp(curNode->ident, node->data.symbol.ident) == 0) {\r\n                return eval(curNode->val);\r\n            }\r\n            curNode = curNode->next;\r\n        }\r\n\r\n        parent = parent->parent;\r\n    }\r\n    printf(\"Variable %s not found\\n\", node->data.symbol.ident);\r\n}\r\n\r\n//set the symbol table to the expr, the parent of all\r\n//the values in the table is set to the expr\r\n\r\nAST_NODE* setSymbolTable(SYMBOL_TABLE_NODE* symtable, AST_NODE* s_expr)\r\n{\r\n    if(s_expr == NULL)\r\n        return NULL;\r\n\r\n    SYMBOL_TABLE_NODE* curNode = symtable;\r\n    while(curNode != NULL)\r\n    {\r\n        curNode->val->parent = s_expr;\r\n        curNode = curNode->next;\r\n    }\r\n    s_expr->symbolTable = symtable;\r\n    return s_expr;\r\n}\r\n\r\n//create an ast node of type symbol table\r\n\r\nAST_NODE* symbolASTNode(char* id)\r\n{\r\n    AST_NODE* symbolAST = malloc(sizeof(AST_NODE));\r\n\r\n    symbolAST->type = SYM_NODE_TYPE;\r\n    symbolAST->data.symbol.ident = malloc(sizeof(char*) * strlen(id)+1);\r\n    strcpy(symbolAST->data.symbol.ident, id);\r\n    return symbolAST;\r\n}\r\n\r\n//create a symbol table node with the given id and value\r\nSYMBOL_TABLE_NODE* createSymbolTableNode(char* id, AST_NODE* s_expr)\r\n{\r\n    SYMBOL_TABLE_NODE* symbolTableNode = malloc(sizeof(SYMBOL_TABLE_NODE));\r\n\r\n    symbolTableNode->ident = id;\r\n    symbolTableNode->val = s_expr;\r\n    symbolTableNode->next = NULL;\r\n    return symbolTableNode;\r\n}\r\n\r\nSYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* symTableList, SYMBOL_TABLE_NODE* symTableToAdd)\r\n{\r\n    while(symTableList->next != NULL)\r\n        symTableList = symTableList->next;\r\n\r\n\r\n    symTableList->next = symTableToAdd;\r\n    symTableToAdd->next = NULL;\r\n    return symTableList;\r\n}\r\n\r\n// prints the type and value of a RET_VAL\r\nvoid printRetVal(RET_VAL val)\r\n{\r\n    // TODO print the type and value of the value passed in.\r\n\r\n\r\n    if(val.type == DOUBLE_TYPE)\r\n        printf(\"%lf Double\", val.dval);\r\n    if(val.type == INT_TYPE)\r\n        printf(\"%ld Int\", (long)val.dval);\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/ciLisp.c	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
++++ src/ciLisp.c	(date 1574297019786)
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"CMakeRunConfigurationManager\" shouldGenerate=\"true\" shouldDeleteObsolete=\"true\">\r\n    <generated>\r\n      <config projectName=\"cilisp\" targetName=\"cilisp\" />\r\n    </generated>\r\n  </component>\r\n  <component name=\"CMakeSettings\">\r\n    <configurations>\r\n      <configuration PROFILE_NAME=\"Debug\" CONFIG_NAME=\"Debug\" />\r\n    </configurations>\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"e3f0ad52-3945-43cb-95fb-9cbd996e0482\" name=\"Default Changelist\" comment=\"\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/codeStyles/Project.xml\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeCCompiler.cmake\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeCXXCompiler.cmake\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeDetermineCompilerABI_C.bin\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeDetermineCompilerABI_CXX.bin\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeRCCompiler.cmake\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CMakeSystem.cmake\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdC/CMakeCCompilerId.c\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdC/a.exe\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdCXX/CMakeCXXCompilerId.cpp\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/3.12.1/CompilerIdCXX/a.exe\" beforeDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeDirectoryInformation.cmake\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeOutput.log\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeRuleHashes.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/CMakeRuleHashes.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/TargetDirectories.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/C.includecache\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/C.includecache\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/DependInfo.cmake\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/DependInfo.cmake\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/build.make\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/build.make\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/ciLispParser.c.o\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/ciLispParser.c.o\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/ciLispScanner.c.o\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/ciLispScanner.c.o\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/cmake_clean.cmake\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/cmake_clean.cmake\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/depend.internal\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/depend.internal\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/depend.make\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/depend.make\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/flags.make\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/flags.make\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/link.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/link.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/src/ciLisp.c.o\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/cilisp.dir/src/ciLisp.c.o\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-environment.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.bin\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.c\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.c\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.cxx\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/CMakeFiles/feature_tests.cxx\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/Makefile\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/Makefile\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/ciLispParser.c\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/ciLispParser.c\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/ciLispParser.h\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/ciLispParser.h\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/ciLispParser.output\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/ciLispParser.output\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/ciLispScanner.c\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/ciLispScanner.c\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/cilisp\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/cilisp\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/cilisp.cbp\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/cilisp.cbp\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/cmake-build-debug/cmake_install.cmake\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/ciLisp.c\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/ciLisp.c\" afterDir=\"false\" />\r\n    </list>\r\n    <option name=\"EXCLUDED_CONVERTED_TO_IGNORED\" value=\"true\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"ClangdSettings\">\r\n    <option name=\"formatViaClangd\" value=\"false\" />\r\n  </component>\r\n  <component name=\"ExecutionTargetManager\" SELECTED_TARGET=\"CMakeBuildProfile:Debug\" />\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n    <option name=\"UPDATE_TYPE\" value=\"MERGE\" />\r\n  </component>\r\n  <component name=\"ProjectId\" id=\"1TGL36rUrghujUoR6SlVf1bYlS3\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"PropertiesComponent\">\r\n    <property name=\"SHARE_PROJECT_CONFIGURATION_FILES\" value=\"true\" />\r\n    <property name=\"WebServerToolWindowFactoryState\" value=\"false\" />\r\n    <property name=\"last_opened_file_path\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"RunDashboard\">\r\n    <option name=\"ruleStates\">\r\n      <list>\r\n        <RuleState>\r\n          <option name=\"name\" value=\"ConfigurationTypeDashboardGroupingRule\" />\r\n        </RuleState>\r\n        <RuleState>\r\n          <option name=\"name\" value=\"StatusDashboardGroupingRule\" />\r\n        </RuleState>\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"cilisp\" type=\"CMakeRunConfiguration\" factoryName=\"Application\" PASS_PARENT_ENVS_2=\"true\" PROJECT_NAME=\"cilisp\" TARGET_NAME=\"cilisp\" CONFIG_NAME=\"Debug\" RUN_TARGET_PROJECT_NAME=\"cilisp\" RUN_TARGET_NAME=\"cilisp\">\r\n      <method v=\"2\">\r\n        <option name=\"com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask\" enabled=\"true\" />\r\n      </method>\r\n    </configuration>\r\n  </component>\r\n  <component name=\"SvnConfiguration\">\r\n    <configuration />\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"e3f0ad52-3945-43cb-95fb-9cbd996e0482\" name=\"Default Changelist\" comment=\"\" />\r\n      <created>1573081283685</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1573081283685</updated>\r\n      <workItem from=\"1573081286055\" duration=\"9519000\" />\r\n      <workItem from=\"1573686630056\" duration=\"8044000\" />\r\n      <workItem from=\"1574113450597\" duration=\"6981000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"task2 part 2...\">\r\n      <created>1573696048156</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1573696048156</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"2\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"1\" />\r\n  </component>\r\n  <component name=\"UnknownFeatures\">\r\n    <option featureType=\"com.intellij.fileTypeFactory\" implementationName=\"*.y\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State>\r\n              <option name=\"COLUMN_ORDER\" />\r\n            </State>\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"task2 part 2...\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"task2 part 2...\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" type=\"com.jetbrains.cidr.execution.debugger.OCBreakpointType\">\r\n          <url>file://$PROJECT_DIR$/src/ciLisp.c</url>\r\n          <line>56</line>\r\n          <option name=\"timeStamp\" value=\"2\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"com.jetbrains.cidr.execution.debugger.OCBreakpointType\">\r\n          <url>file://$PROJECT_DIR$/src/ciLisp.c</url>\r\n          <line>87</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"com.jetbrains.cidr.execution.debugger.OCBreakpointType\">\r\n          <url>file://$PROJECT_DIR$/src/ciLisp.c</url>\r\n          <line>145</line>\r\n          <option name=\"timeStamp\" value=\"4\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"com.jetbrains.cidr.execution.debugger.OCBreakpointType\">\r\n          <url>file://$PROJECT_DIR$/src/ciLisp.c</url>\r\n          <line>192</line>\r\n          <option name=\"timeStamp\" value=\"6\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"com.jetbrains.cidr.execution.debugger.OCBreakpointType\">\r\n          <url>file://$PROJECT_DIR$/src/ciLisp.c</url>\r\n          <line>351</line>\r\n          <option name=\"timeStamp\" value=\"7\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" type=\"com.jetbrains.cidr.execution.debugger.OCBreakpointType\">\r\n          <url>file://$PROJECT_DIR$/src/ciLisp.c</url>\r\n          <line>175</line>\r\n          <option name=\"timeStamp\" value=\"9\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/workspace.xml	(revision a22545da060eae1df684f0cb9d191839007e2ea5)
++++ .idea/workspace.xml	(date 1574297019690)

@@ -23,7 +23,7 @@ Grammar
 
    14 type: INT_T
    15     | DOUBLE_T
-   16     | /* empty */
+   16     | %empty
 
    17 f_expr: LPAREN FUNC s_expr RPAREN
    18       | LPAREN FUNC s_expr s_expr RPAREN
@@ -68,7 +68,7 @@ f_expr (22)
     on left: 17 18, on right: 4
 
 
-state 0
+State 0
 
     0 $accept: . program $end
 
@@ -85,35 +85,35 @@ state 0
     f_expr   go to state 10
 
 
-state 1
+State 1
 
     7 s_expr: error .
 
     $default  reduce using rule 7 (s_expr)
 
 
-state 2
+State 2
 
     3 s_expr: SYMBOL .
 
     $default  reduce using rule 3 (s_expr)
 
 
-state 3
+State 3
 
     8 number: INT .
 
     $default  reduce using rule 8 (number)
 
 
-state 4
+State 4
 
     9 number: DOUBLE .
 
     $default  reduce using rule 9 (number)
 
 
-state 5
+State 5
 
     5 s_expr: LPAREN . let_section s_expr RPAREN
    17 f_expr: LPAREN . FUNC s_expr RPAREN
@@ -125,42 +125,42 @@ state 5
     let_section  go to state 13
 
 
-state 6
+State 6
 
     6 s_expr: QUIT .
 
     $default  reduce using rule 6 (s_expr)
 
 
-state 7
+State 7
 
     0 $accept: program . $end
 
     $end  shift, and go to state 14
 
 
-state 8
+State 8
 
     1 program: s_expr . EOL
 
     EOL  shift, and go to state 15
 
 
-state 9
+State 9
 
     2 s_expr: number .
 
     $default  reduce using rule 2 (s_expr)
 
 
-state 10
+State 10
 
     4 s_expr: f_expr .
 
     $default  reduce using rule 4 (s_expr)
 
 
-state 11
+State 11
 
    17 f_expr: LPAREN FUNC . s_expr RPAREN
    18       | LPAREN FUNC . s_expr s_expr RPAREN
@@ -177,7 +177,7 @@ state 11
     f_expr  go to state 10
 
 
-state 12
+State 12
 
    10 let_section: LPAREN . let_list RPAREN
 
@@ -186,7 +186,7 @@ state 12
     let_list  go to state 18
 
 
-state 13
+State 13
 
     5 s_expr: LPAREN let_section . s_expr RPAREN
 
@@ -202,21 +202,21 @@ state 13
     f_expr  go to state 10
 
 
-state 14
+State 14
 
     0 $accept: program $end .
 
     $default  accept
 
 
-state 15
+State 15
 
     1 program: s_expr EOL .
 
     $default  reduce using rule 1 (program)
 
 
-state 16
+State 16
 
    17 f_expr: LPAREN FUNC s_expr . RPAREN
    18       | LPAREN FUNC s_expr . s_expr RPAREN
@@ -234,7 +234,7 @@ state 16
     f_expr  go to state 10
 
 
-state 17
+State 17
 
    11 let_list: LET . let_elem
 
@@ -243,7 +243,7 @@ state 17
     let_elem  go to state 23
 
 
-state 18
+State 18
 
    10 let_section: LPAREN let_list . RPAREN
    12 let_list: let_list . let_elem
@@ -254,28 +254,28 @@ state 18
     let_elem  go to state 25
 
 
-state 19
+State 19
 
     5 s_expr: LPAREN let_section s_expr . RPAREN
 
     RPAREN  shift, and go to state 26
 
 
-state 20
+State 20
 
    17 f_expr: LPAREN FUNC s_expr RPAREN .
 
     $default  reduce using rule 17 (f_expr)
 
 
-state 21
+State 21
 
    18 f_expr: LPAREN FUNC s_expr s_expr . RPAREN
 
     RPAREN  shift, and go to state 27
 
 
-state 22
+State 22
 
    13 let_elem: LPAREN . type SYMBOL s_expr RPAREN
 
@@ -287,63 +287,63 @@ state 22
     type  go to state 30
 
 
-state 23
+State 23
 
    11 let_list: LET let_elem .
 
     $default  reduce using rule 11 (let_list)
 
 
-state 24
+State 24
 
    10 let_section: LPAREN let_list RPAREN .
 
     $default  reduce using rule 10 (let_section)
 
 
-state 25
+State 25
 
    12 let_list: let_list let_elem .
 
     $default  reduce using rule 12 (let_list)
 
 
-state 26
+State 26
 
     5 s_expr: LPAREN let_section s_expr RPAREN .
 
     $default  reduce using rule 5 (s_expr)
 
 
-state 27
+State 27
 
    18 f_expr: LPAREN FUNC s_expr s_expr RPAREN .
 
     $default  reduce using rule 18 (f_expr)
 
 
-state 28
+State 28
 
    14 type: INT_T .
 
     $default  reduce using rule 14 (type)
 
 
-state 29
+State 29
 
    15 type: DOUBLE_T .
 
     $default  reduce using rule 15 (type)
 
 
-state 30
+State 30
 
    13 let_elem: LPAREN type . SYMBOL s_expr RPAREN
 
     SYMBOL  shift, and go to state 31
 
 
-state 31
+State 31
 
    13 let_elem: LPAREN type SYMBOL . s_expr RPAREN
 
@@ -359,14 +359,14 @@ state 31
     f_expr  go to state 10
 
 
-state 32
+State 32
 
    13 let_elem: LPAREN type SYMBOL s_expr . RPAREN
 
     RPAREN  shift, and go to state 33
 
 
-state 33
+State 33
 
    13 let_elem: LPAREN type SYMBOL s_expr RPAREN .
 
