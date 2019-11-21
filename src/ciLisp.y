@@ -5,17 +5,19 @@
 %union {
     double dval;
     char *sval;
+    int datatype;
     struct ast_node *astNode;
     struct symbol_table_node* symbolNode;
 };
 
 %token <sval> FUNC SYMBOL
 %token <dval> INT DOUBLE
+%token <datetype> INT_T DOUBLE_T
 %token LET LPAREN RPAREN EOL QUIT
 
 %type <astNode> s_expr f_expr number
 %type <symbolNode> let_section let_list let_elem
-
+%type <datatype> type
 %%
 
 program:
@@ -77,8 +79,19 @@ let_list:
     };
 
 let_elem:
-    LPAREN SYMBOL s_expr RPAREN {
-        $$ = createSymbolTableNode($2, $3);
+    LPAREN type SYMBOL s_expr RPAREN {
+        $$ = createSymbolTableNode($2, $3, $4);
+    };
+
+type:
+    INT_T {
+        $$ = INT_TYPE;
+    }
+    | DOUBLE_T {
+        $$ = DOUBLE_TYPE;
+    }
+    | {
+        $$ = NO_TYPE;
     };
 
 f_expr:

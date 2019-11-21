@@ -57,11 +57,13 @@ typedef enum {
 
 // Types of numeric values
 typedef enum {
+    NO_TYPE,
     INT_TYPE,
     DOUBLE_TYPE
 } NUM_TYPE;
 
 typedef struct symbol_table_node {
+    NUM_TYPE val_type;
     char *ident;
     struct ast_node *val;
     struct symbol_table_node *next;
@@ -107,7 +109,7 @@ AST_NODE* symbolASTNode(char* id);
 
 AST_NODE* setSymbolTable(SYMBOL_TABLE_NODE* symTable, AST_NODE* s_expr);
 
-SYMBOL_TABLE_NODE* createSymbolTableNode(char* id, AST_NODE* s_expr);
+SYMBOL_TABLE_NODE* createSymbolTableNode(int type, char* id, AST_NODE* s_expr);
 
 SYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* symList, SYMBOL_TABLE_NODE* symToAdd);
 

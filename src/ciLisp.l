@@ -36,6 +36,13 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
     return QUIT;
     }
 
+"int" {
+    return INT_T;
+    }
+"double" {
+    return DOUBLE_T;
+    }
+
 "(" {
     fprintf(stderr, "lex: LPAREN\n");
     return LPAREN;

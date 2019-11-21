@@ -278,13 +278,22 @@ RET_VAL evalSymNode(AST_NODE* node)
         return (RET_VAL){INT_TYPE, NAN};
 
 
-    AST_NODE* parent = node;
+    AST_NODE* parent = node->parent;
     SYMBOL_TABLE_NODE* curNode;
     while(parent != NULL)
     {
         curNode = parent->symbolTable;
         while (curNode != NULL) {
             if (strcmp(curNode->ident, node->data.symbol.ident) == 0) {
+                if(curNode->val_type == NO_TYPE)
+                {
+                    double i = curNode->val->data.number.dval;
+                    int j = (int)i;
+                    if(i-j == 0)
+                        curNode->val_type = INT_TYPE;
+                    else
+                        curNode->val_type = DOUBLE_TYPE;
+                }
                 return eval(curNode->val);
             }
             curNode = curNode->next;
@@ -326,10 +335,11 @@ AST_NODE* symbolASTNode(char* id)
 }
 
 //create a symbol table node with the given id and value
-SYMBOL_TABLE_NODE* createSymbolTableNode(char* id, AST_NODE* s_expr)
+SYMBOL_TABLE_NODE* createSymbolTableNode(int type, char* id, AST_NODE* s_expr)
 {
     SYMBOL_TABLE_NODE* symbolTableNode = malloc(sizeof(SYMBOL_TABLE_NODE));
 
+    symbolTableNode->val_type = type;
     symbolTableNode->ident = id;
     symbolTableNode->val = s_expr;
     symbolTableNode->next = NULL;

@@ -43,11 +43,13 @@
      SYMBOL = 259,
      INT = 260,
      DOUBLE = 261,
-     LET = 262,
-     LPAREN = 263,
-     RPAREN = 264,
-     EOL = 265,
-     QUIT = 266
+     INT_T = 262,
+     DOUBLE_T = 263,
+     LET = 264,
+     LPAREN = 265,
+     RPAREN = 266,
+     EOL = 267,
+     QUIT = 268
    };
 #endif
 /* Tokens.  */
@@ -55,11 +57,13 @@
 #define SYMBOL 259
 #define INT 260
 #define DOUBLE 261
-#define LET 262
-#define LPAREN 263
-#define RPAREN 264
-#define EOL 265
-#define QUIT 266
+#define INT_T 262
+#define DOUBLE_T 263
+#define LET 264
+#define LPAREN 265
+#define RPAREN 266
+#define EOL 267
+#define QUIT 268
 
 
 
@@ -70,11 +74,12 @@ typedef union YYSTYPE
 {
     double dval;
     char *sval;
+    int datatype;
     struct ast_node *astNode;
     struct symbol_table_node* symbolNode;
 }
 /* Line 1529 of yacc.c.  */
-#line 78 "/Users/cristian.aguilar596/Desktop/comp232/ciLisp/cmake-build-debug/ciLispParser.h"
+#line 83 "/Users/cristian.aguilar596/Desktop/comp232/ciLisp/cmake-build-debug/ciLispParser.h"
 	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
