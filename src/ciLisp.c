@@ -83,7 +83,7 @@ AST_NODE *createNumberNode(double value, NUM_TYPE type)
 //      - An OPER_TYPE (the enum identifying the specific function being called)
 //      - 2 AST_NODEs, the operands
 // SEE: AST_NODE, FUNC_AST_NODE, AST_NODE_TYPE.
-AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)
+AST_NODE *createFunctionNode(char *funcName, AST_NODE *op_list)
 {
     AST_NODE *node;
     size_t nodeSize;
@@ -100,13 +100,14 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op1, AST_NODE *op2)
     // For CUSTOM_OPER functions, you should simply assign the "ident" pointer to the passed in funcName.
     // For functions other than CUSTOM_OPER, you should free the funcName after you're assigned the OPER_TYPE.
     node->type = FUNC_NODE_TYPE;
-    node->data.function.op1 = op1;
-    node->data.function.op2 = op2;
+    node->data.function.opList = op_list;
     node->data.function.oper = resolveFunc(funcName);
-    if(op1 != NULL)
-        op1->parent = node;
-    if(op2 != NULL)
-        op2->parent = node;
+    AST_NODE* listTemp = op_list;
+    while(listTemp != NULL)
+    {
+        listTemp->parent = node;
+        listTemp = listTemp->next;
+    }
 
 
     return node;

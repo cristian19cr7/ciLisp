@@ -95,13 +95,17 @@ type:
     };
 
 f_expr:
-    LPAREN FUNC s_expr RPAREN {
+    LPAREN FUNC s_expr_list RPAREN {
         fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC expr RPAREN\n");
         $$ = createFunctionNode($2, $3, NULL);
+    };
+
+s_expr_list:
+    s_expr s_expr_list {
+        $$ = addParaToList($1, $2);
     }
-    | LPAREN FUNC s_expr s_expr RPAREN {
-        fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC expr expr RPAREN\n");
-        $$ = createFunctionNode($2, $3, $4);
+    | s_expr {
+        $$ = $1;
     };
 %%
 
