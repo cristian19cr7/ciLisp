@@ -121,6 +121,7 @@ RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode);
 RET_VAL evalSymNode(AST_NODE* symNode);
+RET_VAL multi_para_func(AST_NODE* opList,OPER_TYPE operType);
 void printRetVal(RET_VAL val);
 
 #endif

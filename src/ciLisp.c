@@ -125,8 +125,8 @@ void freeNode(AST_NODE *node)
     if (node->type == FUNC_NODE_TYPE)
     {
         // Recursive calls to free child nodes
-        freeNode(node->data.function.op1);
-        freeNode(node->data.function.op2);
+//        freeNode(node->data.function.op1);
+//        freeNode(node->data.function.op2);
 
         // Free up identifier string if necessary
         if (node->data.function.oper == CUSTOM_OPER)
@@ -199,8 +199,8 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
     // TODO populate result with the result of running the function on its operands.
     // SEE: AST_NODE, AST_NODE_TYPE, FUNC_AST_NODE
 
-    RET_VAL op1 = eval(funcNode->op1);
-    RET_VAL op2 = eval(funcNode->op2);
+    RET_VAL op1 = eval(funcNode->opList);
+    RET_VAL op2 = eval(funcNode->opList->next);
 
     double op1val = op1.dval;
     double op2val = op2.dval;
@@ -210,6 +210,25 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
 
     switch (funcNode->oper)
     {
+
+//        case NEG_OPER:
+//        case ABS_OPER:
+//        case EXP_OPER:
+//        case SQRT_OPER:
+//        case LOG_OPER:
+//        case EXP2_OPER:
+//        case CBRT_OPER:
+//        case PRINT_OPER:
+//            ;
+//        case ADD_OPER:
+//        case SUB_OPER:
+//        case MULT_OPER:
+//        case DIV_OPER:
+//        case REMAINDER_OPER:
+//        case POW_OPER:
+//        case MAX_OPER:
+//        case MIN_OPER:
+//        case HYPOT_OPER:
 
         case NEG_OPER:
             result.dval = -op1val;
@@ -224,13 +243,12 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
             result.dval = sqrt(op1val);
             break;
         case ADD_OPER:
-            result.dval = op1val+op2val;
+        case MULT_OPER:
+        case PRINT_OPER:
+            result = multi_para_func(funcNode->opList, funcNode->oper);
             break;
         case SUB_OPER:
             result.dval = op1val-op2val;
-            break;
-        case MULT_OPER:
-            result.dval = op1val*op2val;
             break;
         case DIV_OPER:
             if(op2val == 0.0)
@@ -263,9 +281,6 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
             break;
         case READ_OPER:break;
         case RAND_OPER:break;
-        case PRINT_OPER:
-            result.dval = op1val;
-            break;
         case EQUAL_OPER:break;
         case LESS_OPER:break;
         case GREATER_OPER:break;
@@ -378,6 +393,41 @@ SYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* symTableList, SYMBOL_TABLE_NODE*
     return symTableList;
 }
 
+AST_NODE* addParaToList(AST_NODE* s_expr, AST_NODE* s_exprList)
+{
+    if(s_exprList == NULL)
+        return s_expr;
+
+    s_expr->next = s_exprList;
+    return s_expr;
+}
+
+RET_VAL multi_para_func(AST_NODE* opList, OPER_TYPE operType)
+{
+    RET_VAL result = {INT_TYPE, 0.0};
+    double temp1 = 0.0, temp2 = 0.0;
+
+    switch(operType)
+    {
+        case ADD_OPER:
+            while(opList != NULL)
+            {
+                temp1 = eval(opList).dval;
+                result.dval = result.dval + temp1;
+                opList = opList->next;
+
+                if(opList == NULL) break;
+
+                temp1 = eval(opList).dval;
+                result.dval = result.dval + temp1;
+                opList = opList->next;
+            }
+            break;
+    }
+
+    return result;
+
+}
 // prints the type and value of a RET_VAL
 void printRetVal(RET_VAL val)
 {

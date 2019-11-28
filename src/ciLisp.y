@@ -15,7 +15,7 @@
 %token <datetype> INT_T DOUBLE_T
 %token LET LPAREN RPAREN EOL QUIT
 
-%type <astNode> s_expr f_expr number
+%type <astNode> s_expr f_expr number s_expr_list
 %type <symbolNode> let_section let_list let_elem
 %type <datatype> type
 %%
@@ -97,7 +97,7 @@ type:
 f_expr:
     LPAREN FUNC s_expr_list RPAREN {
         fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC expr RPAREN\n");
-        $$ = createFunctionNode($2, $3, NULL);
+        $$ = createFunctionNode($2, $3);
     };
 
 s_expr_list:
