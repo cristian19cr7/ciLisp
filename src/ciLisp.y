@@ -102,7 +102,7 @@ f_expr:
     | LPAREN FUNC RPAREN {
         fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC RPAREN\n");
         $$ = createFunctionNode($2, NULL);
-    }
+    };
 
 
 s_expr_list:

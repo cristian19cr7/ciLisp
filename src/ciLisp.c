@@ -160,6 +160,12 @@ RET_VAL eval(AST_NODE *node)
     {
         case FUNC_NODE_TYPE:
             result = evalFuncNode(&node->data.function);
+            if(node->data.function.oper == READ_OPER)
+            {
+                node->type = NUM_NODE_TYPE;
+                node->data.number = result;
+            }
+
             break;
         case NUM_NODE_TYPE:
             result = evalNumNode(&node->data.number);
@@ -273,8 +279,9 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
         case READ_OPER: {
 
             printf("read:= ");
-            scanf("%lf \n", &result.dval);
+            scanf("%lf", &result.dval);
 //          result.dval = strtod(temp, NULL);
+            while((getchar()) != '\n');
             break;
         }
         case RAND_OPER:break;
@@ -292,7 +299,7 @@ RET_VAL evalSymNode(AST_NODE* node)
     if (!node)
         return (RET_VAL){INT_TYPE, NAN};
 
-
+    RET_VAL resultEvalSym = {INT_TYPE, NAN};
     AST_NODE* parent = node->parent;
     SYMBOL_TABLE_NODE* curNode;
     while(parent != NULL)
@@ -301,7 +308,9 @@ RET_VAL evalSymNode(AST_NODE* node)
         while (curNode != NULL) {
             if (strcmp(curNode->ident, node->data.symbol.ident) == 0) {
                 if(curNode->val->type != NUM_NODE_TYPE) {
-                    return eval(curNode->val);
+                    resultEvalSym = eval(curNode->val);
+                    resultEvalSym.type = curNode->val_type;
+                    return resultEvalSym;
                 }
 
                 double i = curNode->val->data.number.dval;
@@ -318,14 +327,20 @@ RET_VAL evalSymNode(AST_NODE* node)
 
                     }
                 }
-                else if(curNode->val_type == INT_TYPE)
-                {
-                    curNode->val->data.number.dval = j;
+                else{
+                    if(curNode->val->data.number.type == DOUBLE_TYPE && curNode->val_type == INT_TYPE)
+                        printf("WARNING: precision loss in the assignment for variable %s \n", curNode->ident);
+
                     curNode->val->data.number.type = curNode->val_type;
-                    printf("WARNING: precision loss in the assignment for variable %s \n", curNode->ident);
                 }
-                else
-                    curNode->val->data.number.type = curNode->val_type;
+//                else if(curNode->val_type == INT_TYPE)
+//                {
+//                    curNode->val->data.number.dval = j;
+//                    curNode->val->data.number.type = curNode->val_type;
+//                    printf("WARNING: precision loss in the assignment for variable %s \n", curNode->ident);
+//                }
+//                else
+//                    curNode->val->data.number.type = curNode->val_type;
 
                 return eval(curNode->val);
             }
@@ -381,11 +396,12 @@ SYMBOL_TABLE_NODE* createSymbolTableNode(int type, char* id, AST_NODE* s_expr)
 
 SYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* symTableList, SYMBOL_TABLE_NODE* symTableToAdd)
 {
-    while(symTableList->next != NULL)
-        symTableList = symTableList->next;
+    SYMBOL_TABLE_NODE* temp = symTableList;
+    while(temp->next != NULL)
+        temp = temp->next;
 
 
-    symTableList->next = symTableToAdd;
+    temp->next = symTableToAdd;
     symTableToAdd->next = NULL;
     return symTableList;
 }
