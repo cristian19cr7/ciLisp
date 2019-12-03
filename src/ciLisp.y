@@ -98,7 +98,12 @@ f_expr:
     LPAREN FUNC s_expr_list RPAREN {
         fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC expr RPAREN\n");
         $$ = createFunctionNode($2, $3);
-    };
+    }
+    | LPAREN FUNC RPAREN {
+        fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC RPAREN\n");
+        $$ = createFunctionNode($2, NULL);
+    }
+
 
 s_expr_list:
     s_expr s_expr_list {

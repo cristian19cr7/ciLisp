@@ -71,7 +71,7 @@ AST_NODE *createNumberNode(double value, NUM_TYPE type)
     }else
     {
         node->data.number.type = type;
-        node->data.number.dval = (long)value;
+        node->data.number.dval = value;
     }
     return node;
 }
@@ -102,12 +102,16 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op_list)
     node->type = FUNC_NODE_TYPE;
     node->data.function.opList = op_list;
     node->data.function.oper = resolveFunc(funcName);
-    AST_NODE* listTemp = op_list;
-    while(listTemp != NULL)
+    if(op_list != NULL)
     {
-        listTemp->parent = node;
-        listTemp = listTemp->next;
+        AST_NODE* listTemp = op_list;
+        while(listTemp != NULL)
+        {
+            listTemp->parent = node;
+            listTemp = listTemp->next;
+        }
     }
+
 
 
     return node;
@@ -199,8 +203,14 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
     // TODO populate result with the result of running the function on its operands.
     // SEE: AST_NODE, AST_NODE_TYPE, FUNC_AST_NODE
 
-    RET_VAL op1 = eval(funcNode->opList);
-    RET_VAL op2 = eval(funcNode->opList->next);
+    RET_VAL op1;
+    RET_VAL op2;
+
+    if(funcNode->opList != NULL)
+    {
+        op1 = eval(funcNode->opList);
+        op2 = eval(funcNode->opList->next);
+    }
 
     double op1val = op1.dval;
     double op2val = op2.dval;
@@ -210,25 +220,6 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
 
     switch (funcNode->oper)
     {
-
-//        case NEG_OPER:
-//        case ABS_OPER:
-//        case EXP_OPER:
-//        case SQRT_OPER:
-//        case LOG_OPER:
-//        case EXP2_OPER:
-//        case CBRT_OPER:
-//        case PRINT_OPER:
-//            ;
-//        case ADD_OPER:
-//        case SUB_OPER:
-//        case MULT_OPER:
-//        case DIV_OPER:
-//        case REMAINDER_OPER:
-//        case POW_OPER:
-//        case MAX_OPER:
-//        case MIN_OPER:
-//        case HYPOT_OPER:
 
         case NEG_OPER:
             result.dval = -op1val;
@@ -279,7 +270,13 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
         case HYPOT_OPER:
             result.dval = hypot(op1val, op2val);
             break;
-        case READ_OPER:break;
+        case READ_OPER: {
+
+            printf("read:= ");
+            scanf("%lf \n", &result.dval);
+//          result.dval = strtod(temp, NULL);
+            break;
+        }
         case RAND_OPER:break;
         case EQUAL_OPER:break;
         case LESS_OPER:break;
@@ -405,7 +402,8 @@ AST_NODE* addParaToList(AST_NODE* s_expr, AST_NODE* s_exprList)
 RET_VAL multi_para_func(AST_NODE* opList, OPER_TYPE operType)
 {
     RET_VAL result = {INT_TYPE, 0.0};
-    double temp1 = 0.0, temp2 = 0.0;
+    double temp1 = 0.0;
+
 
     switch(operType)
     {
@@ -413,20 +411,60 @@ RET_VAL multi_para_func(AST_NODE* opList, OPER_TYPE operType)
             while(opList != NULL)
             {
                 temp1 = eval(opList).dval;
+                result.type = checkType(temp1);
                 result.dval = result.dval + temp1;
                 opList = opList->next;
 
                 if(opList == NULL) break;
 
                 temp1 = eval(opList).dval;
+                result.type = checkType(temp1);
                 result.dval = result.dval + temp1;
                 opList = opList->next;
             }
+            break;
+        case MULT_OPER:
+            result.dval = 1.0;
+            while(opList != NULL)
+            {
+                temp1 = eval(opList).dval;
+                result.type = checkType(temp1);
+                result.dval = result.dval * temp1;
+                opList = opList->next;
+
+                if(opList == NULL) break;
+
+                temp1 = eval(opList).dval;
+                result.type = checkType(temp1);
+                result.dval = result.dval * temp1;
+                opList = opList->next;
+            }
+            break;
+        case PRINT_OPER:
+            while (opList!=NULL)
+            {
+                temp1 = eval(opList).dval;
+                result.type = checkType(temp1);
+                if(result.type == DOUBLE_TYPE)
+                    printf("%lf ", temp1);
+                else
+                    printf("%d ", (int)temp1);
+                opList = opList->next;
+            }
+            result.dval = temp1;
+            printf("\n");
             break;
     }
 
     return result;
 
+}
+NUM_TYPE checkType(double num)
+{
+    int i = (int) num;
+    if(num - i == 0)    return INT_TYPE;
+
+    return DOUBLE_TYPE;
 }
 // prints the type and value of a RET_VAL
 void printRetVal(RET_VAL val)
