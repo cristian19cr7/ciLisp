@@ -11,7 +11,7 @@ int [+-]?{digit}+
 double [+-]?{digit}+\.{digit}*
 letter [a-zA-Z]
 symbol {letter}+
-func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"max"|"min"|"print"|"read"
+func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"max"|"min"|"print"|"read"|"rand"|"equal"|"less"|"greater"
 
 %%
 
@@ -25,6 +25,10 @@ func "neg"|"abs"|"exp"|"sqrt"|"add"|"sub"|"mult"|"div"|"remainder"|"log"|"pow"|"
     yylval.dval = strtod(yytext, NULL);
     fprintf(stderr, "lex: DOUBLE dval = %lf\n", yylval.dval);
     return DOUBLE;
+}
+"cond" {
+    fprintf(stderr, "lex: COND\n");
+    return COND;
 }
 
 "let" {

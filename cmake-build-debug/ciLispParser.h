@@ -55,7 +55,8 @@ extern int yydebug;
     LPAREN = 265,
     RPAREN = 266,
     EOL = 267,
-    QUIT = 268
+    QUIT = 268,
+    COND = 269
   };
 #endif
 
@@ -72,7 +73,7 @@ union YYSTYPE
     struct ast_node *astNode;
     struct symbol_table_node* symbolNode;
 
-#line 76 "/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/cmake-build-debug/ciLispParser.h" /* yacc.c:1909  */
+#line 77 "/cygdrive/c/Users/Cristian Aguilar/Desktop/comp232_fall19/ciLisp/cmake-build-debug/ciLispParser.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

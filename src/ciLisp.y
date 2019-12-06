@@ -13,7 +13,7 @@
 %token <sval> FUNC SYMBOL
 %token <dval> INT DOUBLE
 %token <datetype> INT_T DOUBLE_T
-%token LET LPAREN RPAREN EOL QUIT
+%token LET LPAREN RPAREN EOL QUIT COND
 
 %type <astNode> s_expr f_expr number s_expr_list
 %type <symbolNode> let_section let_list let_elem
@@ -42,6 +42,9 @@ s_expr:
     }
     | LPAREN let_section s_expr RPAREN {
         $$ = setSymbolTable($2, $3);
+    }
+    | LPAREN COND s_expr s_expr s_expr RPAREN {
+        $$ = createCondNode($3, $4, $5);
     }
     | QUIT {
         fprintf(stderr, "yacc: s_expr ::= QUIT\n");

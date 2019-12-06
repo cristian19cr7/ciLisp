@@ -102,6 +102,19 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op_list)
     node->type = FUNC_NODE_TYPE;
     node->data.function.opList = op_list;
     node->data.function.oper = resolveFunc(funcName);
+    if(node->data.function.oper == READ_OPER)
+    {
+        printf("read:= ");
+        scanf("%lf", &node->data.number.dval);
+        while((getchar()) != '\n');
+        node->type = NUM_NODE_TYPE;
+        return node;
+    }
+    else if(node->data.function.oper == RAND_OPER)
+    {
+        node->data.number.dval = (double)rand()/RAND_MAX;
+        node->type = NUM_NODE_TYPE;
+    }
     if(op_list != NULL)
     {
         AST_NODE* listTemp = op_list;
@@ -114,6 +127,28 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op_list)
 
 
 
+    return node;
+}
+
+
+
+AST_NODE* createCondNode(AST_NODE* cond, AST_NODE* condTrue, AST_NODE* condFalse)
+{
+    AST_NODE *node;
+    size_t nodeSize;
+
+    // allocate space (or error)
+    nodeSize = sizeof(AST_NODE);
+    if ((node = calloc(nodeSize, 1)) == NULL)
+        yyerror("Memory allocation failed!");
+
+    node->type = COND_NODE_TYPE;
+    node->data.condition.cond = cond;
+    node->data.condition.trueExpr = condTrue;
+    node->data.condition.falseExpr = condFalse;
+    cond->parent = node;
+    condTrue->parent = node;
+    condFalse->parent = node;
     return node;
 }
 
@@ -160,18 +195,15 @@ RET_VAL eval(AST_NODE *node)
     {
         case FUNC_NODE_TYPE:
             result = evalFuncNode(&node->data.function);
-            if(node->data.function.oper == READ_OPER)
-            {
-                node->type = NUM_NODE_TYPE;
-                node->data.number = result;
-            }
-
             break;
         case NUM_NODE_TYPE:
             result = evalNumNode(&node->data.number);
             break;
         case SYM_NODE_TYPE:
             result = evalSymNode(node);
+            break;
+        case COND_NODE_TYPE:
+            result = evalCondNode(node);
             break;
         default:
             yyerror("Invalid AST_NODE_TYPE, probably invalid writes somewhere!");
@@ -212,17 +244,16 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
     RET_VAL op1;
     RET_VAL op2;
 
-    if(funcNode->opList != NULL)
+    if(funcNode->opList != NULL && funcNode->oper != PRINT_OPER)
     {
         op1 = eval(funcNode->opList);
         op2 = eval(funcNode->opList->next);
+        if(op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE)
+            result.type = DOUBLE_TYPE;
     }
 
     double op1val = op1.dval;
     double op2val = op2.dval;
-
-    if(op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE)
-        result.type = DOUBLE_TYPE;
 
     switch (funcNode->oper)
     {
@@ -276,18 +307,29 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
         case HYPOT_OPER:
             result.dval = hypot(op1val, op2val);
             break;
-        case READ_OPER: {
-
-            printf("read:= ");
-            scanf("%lf", &result.dval);
-//          result.dval = strtod(temp, NULL);
-            while((getchar()) != '\n');
-            break;
-        }
+        case READ_OPER:break;
         case RAND_OPER:break;
-        case EQUAL_OPER:break;
-        case LESS_OPER:break;
-        case GREATER_OPER:break;
+        case EQUAL_OPER:
+            result.type = INT_TYPE;
+            if(op1val == op2val)
+                result.dval = 1;
+            else
+                result.dval = 0;
+            break;
+        case LESS_OPER:
+            result.type = INT_TYPE;
+            if(op1val < op2val)
+                result.dval = 1;
+            else
+                result.dval = 0;
+            break;
+        case GREATER_OPER:
+            result.type = INT_TYPE;
+            if(op1val > op2val)
+                result.dval = 1;
+            else
+                result.dval = 0;
+            break;
         case CUSTOM_OPER:break;
     }
 
@@ -313,19 +355,21 @@ RET_VAL evalSymNode(AST_NODE* node)
                     return resultEvalSym;
                 }
 
-                double i = curNode->val->data.number.dval;
-                int j = (int)i;
+
+
                 if(curNode->val_type == NO_TYPE)
                 {
-                    if(i-j == 0) {
-                        curNode->val_type = INT_TYPE;
-                        curNode->val->data.number.dval = j;
-                    }
-                    else {
-                        curNode->val_type = DOUBLE_TYPE;
-                        curNode->val->data.number.dval = i;
+                    curNode->val->data.number.type = checkType(curNode->val->data.number.dval);
 
-                    }
+//                    if(i-j == 0) {
+//                        curNode->val_type = INT_TYPE;
+//                        curNode->val->data.number.dval = j;
+//                    }
+//                    else {
+//                        curNode->val_type = DOUBLE_TYPE;
+//                        curNode->val->data.number.dval = i;
+//
+//                    }
                 }
                 else{
                     if(curNode->val->data.number.type == DOUBLE_TYPE && curNode->val_type == INT_TYPE)
@@ -350,6 +394,17 @@ RET_VAL evalSymNode(AST_NODE* node)
         parent = parent->parent;
     }
     printf("Variable %s not found\n", node->data.symbol.ident);
+    return resultEvalSym;
+}
+
+RET_VAL evalCondNode(AST_NODE* cond)
+{
+
+    RET_VAL condResult = eval(cond->data.condition.cond);
+    if(condResult.dval == 1)
+        return eval(cond->data.condition.trueExpr);
+
+    return eval(cond->data.condition.falseExpr);
 }
 
 //set the symbol table to the expr, the parent of all
@@ -459,15 +514,13 @@ RET_VAL multi_para_func(AST_NODE* opList, OPER_TYPE operType)
         case PRINT_OPER:
             while (opList!=NULL)
             {
-                temp1 = eval(opList).dval;
-                result.type = checkType(temp1);
+                result = eval(opList);
                 if(result.type == DOUBLE_TYPE)
-                    printf("%lf ", temp1);
+                    printf("%lf ", result.dval);
                 else
-                    printf("%d ", (int)temp1);
+                    printf("%d ", (int)result.dval);
                 opList = opList->next;
             }
-            result.dval = temp1;
             printf("\n");
             break;
     }
@@ -489,7 +542,7 @@ void printRetVal(RET_VAL val)
 
 
     if(val.type == DOUBLE_TYPE)
-        printf("%lf Double", val.dval);
+        printf("%.3lf Double", val.dval);
     if(val.type == INT_TYPE)
         printf("%ld Int", (long)val.dval);
 }

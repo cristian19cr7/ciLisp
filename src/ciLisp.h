@@ -52,7 +52,8 @@ OPER_TYPE resolveFunc(char *);
 typedef enum {
     NUM_NODE_TYPE,
     FUNC_NODE_TYPE,
-    SYM_NODE_TYPE
+    SYM_NODE_TYPE,
+    COND_NODE_TYPE
 } AST_NODE_TYPE;
 
 // Types of numeric values
@@ -61,6 +62,12 @@ typedef enum {
     INT_TYPE,
     DOUBLE_TYPE
 } NUM_TYPE;
+
+typedef struct {
+    struct ast_node *cond;
+    struct ast_node *trueExpr; // to eval if cond is nonzero
+    struct ast_node *falseExpr; // to eval if cond is zero
+} COND_AST_NODE;
 
 typedef struct symbol_table_node {
     NUM_TYPE val_type;
@@ -97,6 +104,7 @@ typedef struct ast_node {
         NUM_AST_NODE number;
         FUNC_AST_NODE function;
         SYMBOL_TABLE_NODE symbol;
+        COND_AST_NODE condition;
     } data;
     struct ast_node *next;
 } AST_NODE;
@@ -104,6 +112,8 @@ typedef struct ast_node {
 AST_NODE *createNumberNode(double value, NUM_TYPE type);
 
 AST_NODE *createFunctionNode(char *funcName, AST_NODE *op_list);
+
+AST_NODE* createCondNode(AST_NODE* cond, AST_NODE* condTrue, AST_NODE* condFalse);
 
 AST_NODE* symbolASTNode(char* id);
 
@@ -121,6 +131,7 @@ RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);
 RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode);
 RET_VAL evalSymNode(AST_NODE* symNode);
+RET_VAL evalCondNode(AST_NODE* condNode);
 RET_VAL multi_para_func(AST_NODE* opList,OPER_TYPE operType);
 
 NUM_TYPE checkType(double num);
