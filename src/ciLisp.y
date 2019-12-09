@@ -13,10 +13,10 @@
 %token <sval> FUNC SYMBOL
 %token <dval> INT DOUBLE
 %token <datetype> INT_T DOUBLE_T
-%token LET LPAREN RPAREN EOL QUIT COND
+%token LET LPAREN RPAREN EOL QUIT COND LAMBDA
 
 %type <astNode> s_expr f_expr number s_expr_list
-%type <symbolNode> let_section let_list let_elem
+%type <symbolNode> let_section let_list let_elem arg_list
 %type <datatype> type
 %%
 
@@ -84,6 +84,9 @@ let_list:
 let_elem:
     LPAREN type SYMBOL s_expr RPAREN {
         $$ = createSymbolTableNode($2, $3, $4);
+    }
+    | LPAREN type SYMBOL LAMBDA LPAREN arg_list RPAREN s_expr RPAREN {
+        $$ = createLambda($2 ,$3 ,$6 , $8);
     };
 
 type:
@@ -105,6 +108,9 @@ f_expr:
     | LPAREN FUNC RPAREN {
         fprintf(stderr, "yacc: s_expr ::= LPAREN FUNC RPAREN\n");
         $$ = createFunctionNode($2, NULL);
+    }
+    | LPAREN SYMBOL s_expr_list RPAREN {
+        $$ = createFunctionNode($2, $3);
     };
 
 
@@ -114,6 +120,14 @@ s_expr_list:
     }
     | s_expr {
         $$ = $1;
+    };
+
+arg_list:
+    SYMBOL arg_list {
+        $$ = AddArgtoList($1, $2);
+    }
+    | SYMBOL {
+        $$ = createArg($1);
     };
 %%
 

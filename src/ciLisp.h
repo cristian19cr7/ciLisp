@@ -63,6 +63,13 @@ typedef enum {
     DOUBLE_TYPE
 } NUM_TYPE;
 
+typedef enum { VARIABLE_TYPE, LAMBDA_TYPE, ARG_TYPE } SYMBOL_TYPE;
+
+typedef struct stack_node {
+    struct ast_node *val;
+    struct stack_node *next;
+} STACK_NODE;
+
 typedef struct {
     struct ast_node *cond;
     struct ast_node *trueExpr; // to eval if cond is nonzero
@@ -70,9 +77,11 @@ typedef struct {
 } COND_AST_NODE;
 
 typedef struct symbol_table_node {
+    SYMBOL_TYPE type;
     NUM_TYPE val_type;
     char *ident;
     struct ast_node *val;
+    STACK_NODE *stack;
     struct symbol_table_node *next;
 } SYMBOL_TABLE_NODE;
 
@@ -117,19 +126,25 @@ AST_NODE* createCondNode(AST_NODE* cond, AST_NODE* condTrue, AST_NODE* condFalse
 
 AST_NODE* symbolASTNode(char* id);
 
+AST_NODE* addParaToList(AST_NODE* s_expr,AST_NODE* s_exprList);
+
 AST_NODE* setSymbolTable(SYMBOL_TABLE_NODE* symTable, AST_NODE* s_expr);
 
 SYMBOL_TABLE_NODE* createSymbolTableNode(int type, char* id, AST_NODE* s_expr);
 
 SYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* symList, SYMBOL_TABLE_NODE* symToAdd);
 
-AST_NODE* addParaToList(AST_NODE* s_expr,AST_NODE* s_exprList);
+SYMBOL_TABLE_NODE* createLambda(int type, char* id, SYMBOL_TABLE_NODE* argList, AST_NODE* s_expr);
+
+SYMBOL_TABLE_NODE* createArg(char* arg);
+
+SYMBOL_TABLE_NODE* AddArgtoList(char* argToAdd, SYMBOL_TABLE_NODE* argList);
 
 void freeNode(AST_NODE *node);
 
 RET_VAL eval(AST_NODE *node);
 RET_VAL evalNumNode(NUM_AST_NODE *numNode);
-RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode);
+RET_VAL evalFuncNode(AST_NODE *Node);
 RET_VAL evalSymNode(AST_NODE* symNode);
 RET_VAL evalCondNode(AST_NODE* condNode);
 RET_VAL multi_para_func(AST_NODE* opList,OPER_TYPE operType);

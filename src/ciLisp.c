@@ -102,6 +102,10 @@ AST_NODE *createFunctionNode(char *funcName, AST_NODE *op_list)
     node->type = FUNC_NODE_TYPE;
     node->data.function.opList = op_list;
     node->data.function.oper = resolveFunc(funcName);
+
+    if(node->data.function.oper == CUSTOM_OPER)
+        node->data.function.ident = funcName;
+
     if(node->data.function.oper == READ_OPER)
     {
         printf("read:= ");
@@ -194,7 +198,7 @@ RET_VAL eval(AST_NODE *node)
     switch (node->type)
     {
         case FUNC_NODE_TYPE:
-            result = evalFuncNode(&node->data.function);
+            result = evalFuncNode(node);
             break;
         case NUM_NODE_TYPE:
             result = evalNumNode(&node->data.number);
@@ -231,9 +235,68 @@ RET_VAL evalNumNode(NUM_AST_NODE *numNode)
 }
 
 
-RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
+void pushArgsToStack(AST_NODE* lambda, AST_NODE* list)
 {
-    if (!funcNode)
+    AST_NODE* currOp = list;
+    SYMBOL_TABLE_NODE* currArg = lambda->symbolTable;
+    while (currArg != NULL && currOp != NULL)
+    {
+        if (currArg->type == ARG_TYPE)
+        {
+            STACK_NODE* argPushed = calloc(sizeof(STACK_NODE),1);
+            argPushed->next = currArg->stack;
+            argPushed->val = currOp;
+            currArg->stack = argPushed;
+
+            currOp = currOp->next;
+        }
+        currArg = currArg->next;
+    }
+}
+
+void popArgsFromStack(AST_NODE* lambda)
+{
+    SYMBOL_TABLE_NODE* currArg = lambda->symbolTable;
+    while(currArg != NULL)
+    {
+        if(currArg->type != ARG_TYPE)
+        {
+            STACK_NODE* newTopOfStack = currArg->stack->next;
+
+            free(currArg->stack);
+            currArg->stack = newTopOfStack;
+
+        }
+        currArg = currArg->next;
+    }
+}
+
+RET_VAL evalLambda(AST_NODE* node)
+{
+    RET_VAL resultEvalLambda = {INT_TYPE, NAN};
+    AST_NODE* parent = node;
+    SYMBOL_TABLE_NODE* currLambda = node->symbolTable;
+    while (parent != NULL)
+    {
+        while(currLambda != NULL)
+        {
+            if(strcmp(currLambda->ident, node->data.function.ident)== 0 && currLambda->type == LAMBDA_TYPE)
+            {
+                pushArgsToStack(currLambda->val, node->data.function.opList);
+                resultEvalLambda = eval(currLambda->val);
+                popArgsFromStack(currLambda->val);
+                return resultEvalLambda;
+            }
+            currLambda = currLambda->next;
+        }
+        parent = parent->parent;
+    }
+    return resultEvalLambda;
+}
+
+RET_VAL evalFuncNode(AST_NODE *Node)
+{
+    if (!Node)
         return (RET_VAL){INT_TYPE, NAN};
 
     RET_VAL result = {INT_TYPE, NAN};
@@ -244,10 +307,10 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
     RET_VAL op1;
     RET_VAL op2;
 
-    if(funcNode->opList != NULL && funcNode->oper != PRINT_OPER)
+    if(Node->data.function.opList != NULL && Node->data.function.oper != PRINT_OPER)
     {
-        op1 = eval(funcNode->opList);
-        op2 = eval(funcNode->opList->next);
+        op1 = eval(Node->data.function.opList);
+        op2 = eval(Node->data.function.opList->next);
         if(op1.type == DOUBLE_TYPE || op2.type == DOUBLE_TYPE)
             result.type = DOUBLE_TYPE;
     }
@@ -255,7 +318,7 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
     double op1val = op1.dval;
     double op2val = op2.dval;
 
-    switch (funcNode->oper)
+    switch (Node->data.function.oper)
     {
 
         case NEG_OPER:
@@ -273,7 +336,7 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
         case ADD_OPER:
         case MULT_OPER:
         case PRINT_OPER:
-            result = multi_para_func(funcNode->opList, funcNode->oper);
+            result = multi_para_func(Node->data.function.opList, Node->data.function.oper);
             break;
         case SUB_OPER:
             result.dval = op1val-op2val;
@@ -330,9 +393,19 @@ RET_VAL evalFuncNode(FUNC_AST_NODE *funcNode)
             else
                 result.dval = 0;
             break;
-        case CUSTOM_OPER:break;
+        case CUSTOM_OPER:
+            result = evalLambda(Node);
+            break;
     }
 
+    return result;
+}
+
+RET_VAL evalArg(SYMBOL_TABLE_NODE *arg) {
+    RET_VAL result = (RET_VAL) {INT_TYPE, NAN};
+    if(arg->stack != NULL){
+        result = eval(arg->stack->val);
+    }
     return result;
 }
 
@@ -349,44 +422,35 @@ RET_VAL evalSymNode(AST_NODE* node)
         curNode = parent->symbolTable;
         while (curNode != NULL) {
             if (strcmp(curNode->ident, node->data.symbol.ident) == 0) {
-                if(curNode->val->type != NUM_NODE_TYPE) {
-                    resultEvalSym = eval(curNode->val);
-                    resultEvalSym.type = curNode->val_type;
-                    return resultEvalSym;
-                }
+                if(curNode->type == VARIABLE_TYPE) {
+                    if(curNode->val_type != NO_TYPE)
+                    {
+                        resultEvalSym = eval(curNode->val);
+                        resultEvalSym.type = curNode->val_type;
+                        return resultEvalSym;
+                    }
+                    if(curNode->val_type == NO_TYPE)
+                    {
+                        curNode->val->data.number.type = checkType(curNode->val->data.number.dval);
+                        curNode->val_type = curNode->val->data.number.type;
+                        resultEvalSym = eval(curNode->val);
+                        resultEvalSym.type = curNode->val_type;
+                        return resultEvalSym;
+                    }
+                    else{
+                        if(curNode->val->data.number.type == DOUBLE_TYPE && curNode->val_type == INT_TYPE)
+                            printf("WARNING: precision loss in the assignment for variable %s \n", curNode->ident);
 
-
-
-                if(curNode->val_type == NO_TYPE)
-                {
-                    curNode->val->data.number.type = checkType(curNode->val->data.number.dval);
-
-//                    if(i-j == 0) {
-//                        curNode->val_type = INT_TYPE;
-//                        curNode->val->data.number.dval = j;
-//                    }
-//                    else {
-//                        curNode->val_type = DOUBLE_TYPE;
-//                        curNode->val->data.number.dval = i;
-//
-//                    }
-                }
-                else{
-                    if(curNode->val->data.number.type == DOUBLE_TYPE && curNode->val_type == INT_TYPE)
-                        printf("WARNING: precision loss in the assignment for variable %s \n", curNode->ident);
-
+                        curNode->val->data.number.type = curNode->val_type;
+                    }
                     curNode->val->data.number.type = curNode->val_type;
-                }
-//                else if(curNode->val_type == INT_TYPE)
-//                {
-//                    curNode->val->data.number.dval = j;
-//                    curNode->val->data.number.type = curNode->val_type;
-//                    printf("WARNING: precision loss in the assignment for variable %s \n", curNode->ident);
-//                }
-//                else
-//                    curNode->val->data.number.type = curNode->val_type;
 
-                return eval(curNode->val);
+                    return eval(curNode->val);
+                }
+                else if(curNode->type == ARG_TYPE)
+                {
+                    resultEvalSym = evalArg(curNode);
+                }
             }
             curNode = curNode->next;
         }
@@ -446,19 +510,60 @@ SYMBOL_TABLE_NODE* createSymbolTableNode(int type, char* id, AST_NODE* s_expr)
     symbolTableNode->ident = id;
     symbolTableNode->val = s_expr;
     symbolTableNode->next = NULL;
+    symbolTableNode->type = VARIABLE_TYPE;
     return symbolTableNode;
 }
 
-SYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* symTableList, SYMBOL_TABLE_NODE* symTableToAdd)
+SYMBOL_TABLE_NODE *findSymbol(SYMBOL_TABLE_NODE *symbolTable, SYMBOL_TABLE_NODE *symbol) {
+    if (symbol == NULL) {
+        return NULL;
+    }
+    SYMBOL_TABLE_NODE *cNode = symbolTable;
+    while (cNode != NULL) {
+        if (strcmp(cNode->ident, symbol->ident) == 0) {
+            return cNode;
+        }
+        cNode = cNode->next;
+    }
+    return NULL;
+}
+
+SYMBOL_TABLE_NODE* addSymbol(SYMBOL_TABLE_NODE* let_elem, SYMBOL_TABLE_NODE* let_list)
 {
-    SYMBOL_TABLE_NODE* temp = symTableList;
-    while(temp->next != NULL)
-        temp = temp->next;
+//    SYMBOL_TABLE_NODE* temp = symTableList;
+//    while(temp->next != NULL)
+//        temp = temp->next;
+//
+//
+//    temp->next = symTableToAdd;
+//    symTableToAdd->next = NULL;
+//    return symTableList;
 
-
-    temp->next = symTableToAdd;
-    symTableToAdd->next = NULL;
-    return symTableList;
+    if (let_elem == NULL) {
+        return let_list;
+    }
+    if (let_elem->val == NULL) {
+        if(let_elem->type == VARIABLE_TYPE) {
+            return let_list;
+        } else {
+            if(let_elem->next == NULL) {
+                let_elem->next = let_list;
+            } else {
+                addSymbol(let_list, let_elem->next);
+            }
+            return let_elem;
+        }
+    }
+    SYMBOL_TABLE_NODE *symbol = findSymbol(let_list, let_elem);
+    if (symbol == NULL) {
+        let_elem->next = let_list;
+        return let_elem;
+    } else {
+        symbol->val = let_elem->val;
+        symbol->val->data = let_elem->val->data;
+        //freeSymbolTable(let_elem);
+        return let_list;
+    }
 }
 
 AST_NODE* addParaToList(AST_NODE* s_expr, AST_NODE* s_exprList)
@@ -482,14 +587,16 @@ RET_VAL multi_para_func(AST_NODE* opList, OPER_TYPE operType)
             while(opList != NULL)
             {
                 temp1 = eval(opList).dval;
-                result.type = checkType(temp1);
+                if(checkType(temp1) == DOUBLE_TYPE)
+                    result.type = DOUBLE_TYPE;
                 result.dval = result.dval + temp1;
                 opList = opList->next;
 
                 if(opList == NULL) break;
 
                 temp1 = eval(opList).dval;
-                result.type = checkType(temp1);
+                if(checkType(temp1) == DOUBLE_TYPE)
+                    result.type = DOUBLE_TYPE;
                 result.dval = result.dval + temp1;
                 opList = opList->next;
             }
@@ -499,14 +606,16 @@ RET_VAL multi_para_func(AST_NODE* opList, OPER_TYPE operType)
             while(opList != NULL)
             {
                 temp1 = eval(opList).dval;
-                result.type = checkType(temp1);
+                if(checkType(temp1) == DOUBLE_TYPE)
+                    result.type = DOUBLE_TYPE;
                 result.dval = result.dval * temp1;
                 opList = opList->next;
 
                 if(opList == NULL) break;
 
                 temp1 = eval(opList).dval;
-                result.type = checkType(temp1);
+                if(checkType(temp1) == DOUBLE_TYPE)
+                    result.type = DOUBLE_TYPE;
                 result.dval = result.dval * temp1;
                 opList = opList->next;
             }
@@ -528,6 +637,7 @@ RET_VAL multi_para_func(AST_NODE* opList, OPER_TYPE operType)
     return result;
 
 }
+
 NUM_TYPE checkType(double num)
 {
     int i = (int) num;
@@ -535,6 +645,50 @@ NUM_TYPE checkType(double num)
 
     return DOUBLE_TYPE;
 }
+
+SYMBOL_TABLE_NODE* createLambda(int type, char* id, SYMBOL_TABLE_NODE* argList, AST_NODE* s_expr)
+{
+    SYMBOL_TABLE_NODE* LambdaNode = calloc(sizeof(SYMBOL_TABLE_NODE), 1);
+
+    LambdaNode->val_type = type;
+    LambdaNode->type = LAMBDA_TYPE;
+    LambdaNode->ident = id;
+    LambdaNode->val = s_expr;
+    s_expr->symbolTable = addSymbol(s_expr->symbolTable, argList);
+
+    return LambdaNode;
+}
+
+SYMBOL_TABLE_NODE* createArg(char* arg)
+{
+    SYMBOL_TABLE_NODE* newArg = calloc(sizeof(SYMBOL_TABLE_NODE), 1);
+
+    newArg->ident = arg;
+    newArg->type = ARG_TYPE;
+
+    return newArg;
+}
+
+SYMBOL_TABLE_NODE* AddArgtoList(char* argToAdd, SYMBOL_TABLE_NODE* argList)
+{
+    if(argList == NULL)
+        return createArg(argToAdd);
+
+    SYMBOL_TABLE_NODE* arg = argList;
+    while(arg != NULL)
+    {
+        if(strcmp(argToAdd, arg->ident) == 0)
+            return argList;
+
+        arg = arg->next;
+    }
+
+    arg = createArg(argToAdd);
+    arg->next = argList;
+    return arg;
+}
+
+
 // prints the type and value of a RET_VAL
 void printRetVal(RET_VAL val)
 {
