@@ -1,0 +1,68 @@
+Task 1:
+> (add 1 2)
+3 Int
+> (sub 3 56)
+-53 Int
+> (mult 2 4.42)
+8.840 Double
+> quit
+
+Task 2:
+
+> (add ((let (abc 1)) (sub 3 abc)) 4)
+6 Int
+> (mult ((let (a 1) (b 2)) (add a b)) (sqrt 2))
+4.243 Double
+> (add ((let (a ((let (b 2)) (mult b (sqrt 10))))) (div a 2)) ((let (c 5)) (sqrt c)))
+3.236 Double
+> ((let (first (sub 5 1)) (second 2)) (add (pow 2 first) (sqrt second)))
+33.414 Double
+> quit
+
+Task 3:
+> ((let (int a 1.25))(add a 1))
+WARNING: precision loss in the assignment for variable a
+2.000
+>
+
+Task 4:
+> ((let (int abc 34)(double var 3.424))(print var abc))
+3.424000 34 
+34 Int
+> 
+
+Task 5:
+
+> (add 1 2 3 4 5)
+15 Int
+> (mult 2 3 2.2 1.13)
+14.916 Double
+> ((let (int a 1)(double b 2))(print a b 3))
+1 2.000000 3 
+3 Int
+> 
+
+Task 6:
+>((let (int a (read)) (double b (read)) (c (read)) (d (read))) (print a b c d))
+read:= 1902
+read:= 0.23134
+read:= -343.23
+read:= 44
+1902 0.231340 -343.230000 44 
+44 Int
+> ((let (a 0)) (cond (less (rand) 0.5) (add a 1) (sub a 1)))
+-1 Int
+> ((let (myA (read))(myB (rand)))(cond (less myA myB) (print myA) (print myB)))
+read:= 3
+0.907952 
+0.908 Double
+>
+
+CiLisp Task 7: 
+Added a lot of functions 
+
+> ((let (f lambda (x y) (add x y)))(f (sub 5 2) (mult 2 3))) 
+9 Int
+> ((let (double myFunc lambda (x y) (mult (add x 5) (sub y 2)))) (sub (myFunc 3 5) 2))
+22 Int
+> 
