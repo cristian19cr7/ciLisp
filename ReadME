@@ -1,3 +1,11 @@
+I got to Task 7 but the freeNode function doesn't free all the nodes and causes memory leaks.
+I tried to implement something to free everything but after if I input this line,
+((let (f lambda (x y) (add x y)))(f (sub 5 2) (mult 2 3))) one after thr another the second time it
+caused a SEGFAULT error. So I left the freeNode function incomplete.
+
+TEST CASES
+
+
 Task 1:
 > (add 1 2)
 3 Int
@@ -59,7 +67,6 @@ read:= 3
 >
 
 CiLisp Task 7: 
-Added a lot of functions 
 
 > ((let (f lambda (x y) (add x y)))(f (sub 5 2) (mult 2 3))) 
 9 Int
