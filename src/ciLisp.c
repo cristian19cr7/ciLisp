@@ -156,6 +156,18 @@ AST_NODE* createCondNode(AST_NODE* cond, AST_NODE* condTrue, AST_NODE* condFalse
     return node;
 }
 
+void freeSymbolTable(SYMBOL_TABLE_NODE* node)
+{
+    if(node == NULL)
+        return;
+
+    freeSymbolTable(node->next);
+    free(node->ident);
+    freeNode(node->val);
+    free(node);
+
+}
+
 // Called after execution is done on the base of the tree.
 // (see the program production in ciLisp.y)
 // Recursively frees the whole abstract syntax tree.
@@ -165,18 +177,35 @@ void freeNode(AST_NODE *node)
     if (!node)
         return;
 
+    free(node->next);
+
     if (node->type == FUNC_NODE_TYPE)
     {
         // Recursive calls to free child nodes
-//        freeNode(node->data.function.op1);
-//        freeNode(node->data.function.op2);
+        free(node->data.function.ident);
+        freeNode(node->data.function.opList);
 
         // Free up identifier string if necessary
         if (node->data.function.oper == CUSTOM_OPER)
         {
-            free(node->data.function.ident);
+            //free(node->data.function.ident);
+            //freeNode(node->data.)
+
         }
     }
+
+    else if(node->type == COND_NODE_TYPE)
+    {
+        freeNode(node->data.condition.cond);
+        freeNode(node->data.condition.falseExpr);
+        freeNode(node->data.condition.trueExpr);
+    }
+    else if(node->type == SYM_NODE_TYPE)
+    {
+        free(node->data.symbol.ident);
+    }
+
+    //freeSymbolTable(node->symbolTable);
 
     free(node);
 }
@@ -262,7 +291,7 @@ void popArgsFromStack(AST_NODE* lambda)
         if(currArg->type != ARG_TYPE)
         {
             STACK_NODE* newTopOfStack = currArg->stack->next;
-
+            freeNode(currArg->stack->val);
             free(currArg->stack);
             currArg->stack = newTopOfStack;
 
@@ -275,9 +304,10 @@ RET_VAL evalLambda(AST_NODE* node)
 {
     RET_VAL resultEvalLambda = {INT_TYPE, NAN};
     AST_NODE* parent = node;
-    SYMBOL_TABLE_NODE* currLambda = node->symbolTable;
+    SYMBOL_TABLE_NODE* currLambda;
     while (parent != NULL)
     {
+        currLambda = parent->symbolTable;
         while(currLambda != NULL)
         {
             if(strcmp(currLambda->ident, node->data.function.ident)== 0 && currLambda->type == LAMBDA_TYPE)
@@ -450,6 +480,7 @@ RET_VAL evalSymNode(AST_NODE* node)
                 else if(curNode->type == ARG_TYPE)
                 {
                     resultEvalSym = evalArg(curNode);
+                    return resultEvalSym;
                 }
             }
             curNode = curNode->next;
@@ -496,8 +527,7 @@ AST_NODE* symbolASTNode(char* id)
     AST_NODE* symbolAST = malloc(sizeof(AST_NODE));
 
     symbolAST->type = SYM_NODE_TYPE;
-    symbolAST->data.symbol.ident = malloc(sizeof(char*) * strlen(id)+1);
-    strcpy(symbolAST->data.symbol.ident, id);
+    symbolAST->data.symbol.ident = id;
     return symbolAST;
 }
 
